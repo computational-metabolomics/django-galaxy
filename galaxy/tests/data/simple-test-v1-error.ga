@@ -1,0 +1,63 @@
+{
+    "a_galaxy_workflow": "true", 
+    "annotion": "", 
+    "format-veion": "0.1", 
+    "nme": "simple-test", 
+    "seps": {
+        "0": {
+            "annotation": "", 
+            "content_id": null, 
+            "errs": null, 
+            "id": 0, 
+            "input_connections": {}, 
+            "inputs": [], 
+            "label": null, 
+            "name": "Input dataset", 
+            "outs": [], 
+            "position": {
+                "left": 361, 
+                "top": 177.5
+            }, 
+            "tool_id": null, 
+            "tool_state": "{}", 
+            "tool_version": null, 
+            "tye": "data_input", 
+            "uuid": "afab568c-21f3-4052-906c-dedeeaf7e09a", 
+            "workflow_outputs": []
+        }, 
+        "1": {
+            "annotation": "", 
+            "content_id": "addValue", 
+            "errors": null, 
+            "id": 1, 
+            "input_connections": {
+                "input": {
+                    "id": 0, 
+                    "output_name": "output"
+                }
+            }, 
+            "inputs": [], 
+            "label": null, 
+            "name": "Add column", 
+            "outputs": [
+                {
+                    "name": "out_file1", 
+                    "type": "input"
+                }
+            ], 
+            "position": {
+                "left": 578, 
+                "top": 231.5
+            }, 
+            "post_job_actions": {}, 
+            "tool_id": "addValue", 
+            "tool_state": "{\"__page__\": null, \"iterate\": \"\\\"no\\\"\", \"__rerun_remap_job_id__\": null, \"exp\": \"\\\"1\\\"\", \"input\": \"null\"}", 
+            "tool_version": "1.0.0", 
+            "type": "tool", 
+            "ud": "aaa65b76-35ca-4a71-aab4-7eee9f668700", 
+            "workflow_outputs": []
+        }
+    }, 
+    "ts": [], 
+    "uuiERRORORORORORORORORd": "3480b898-c125-4c94-afec-be44ac31155c"
+}

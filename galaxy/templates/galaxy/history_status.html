@@ -1,0 +1,28 @@
+{% extends "gfiles/table_file_select.html" %}
+{% load static %}
+{% block sb_admin_title %}History Status{% endblock sb_admin_title %}
+{% block sb_admin_subheading %}{% endblock sb_admin_subheading %}
+{% block sb_admin_breadcrumb %}
+    <a href="{% url "index" %}"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
+    / <a href="{% url "galaxy_summary" %}"> Galaxy Summary</a>
+{% endblock sb_admin_breadcrumb %}
+{% block sb_admin_breadcrumb_active %} / History Status {% endblock sb_admin_breadcrumb_active %}
+{% block hidden_value %} <input type="hidden" id="django_update_url" name="django_update_url" value="{{django_update_url }}"> {% endblock hidden_value %}
+
+{% block sb_admin_custom_js %}
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="{% static 'gfiles/table_check.js' %}"></script>
+    <script src="{% static 'gfiles/status_updates.js' %}"></script>
+    <script src="{% static 'gfiles/show_hide_filters.js' %}"></script>
+    <script type="text/javascript" src="{% static "django_tables2_column_shifter/js/django_tables2_column_shifter.min.js" %}"></script>
+{% endblock sb_admin_custom_js %}
+
+{% block header1 %}Inspect Galaxy Histories{% endblock header1 %}
+
+{% block select_items_info %}
+    <i id=update_spinner class="fa fa-circle-o-notch fa-spin" style="font-size:24px"></i>
+    <p id='updating'> Initial update running (results in the table below may change). This can take a while if there are > 20
+        histories in your Galaxy instances </p>
+{% endblock select_items_info %}
+
+{% block header2 %}Remove Selected History Items{% endblock header2 %}

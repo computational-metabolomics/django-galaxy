@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block sb_admin_title %} Workflow Run {% endblock sb_admin_title %}
+{% block sb_admin_subheading %}  {% endblock sb_admin_subheading %}
+{% block sb_admin_breadcrumb %}
+        <a href="{% url "index" %}"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
+        <a href="{% url "galaxy_summary" %}"> / Galaxy Summary </a>
+        <a href="{% url "workflow_summary" %}"> / Workflow Summary </a>
+{% endblock sb_admin_breadcrumb %}
+{% block sb_admin_breadcrumb_active %} / Workflow Run {% endblock sb_admin_breadcrumb_active %}
+
+
+{% block sb_admin_custom_js %}
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="{% static 'gfiles/show_hide_filters.js' %}"></script>
+    <script src="{% static 'gfiles/table_check.js' %}"></script>
+    <script type="text/javascript" src="{% static "django_tables2_column_shifter/js/django_tables2_column_shifter.min.js" %}"></script>
+{% endblock sb_admin_custom_js %}
+
+{% block content %}
+    <input type="hidden" id="django_url" name="django_url" value='/galaxy/runworkflow/{{ wid }}'>
+
+    <input type="hidden" id="selected_items" name="selected_items" value='{{ request.session.selected_items | safe}}'>
+    {% load render_table from django_tables2 %}
+    {% load querystring from django_tables2 %}
+    {% load bootstrap3 %}
+
+
+    <p><button type="submit" id="clear_selection" onclick="clearSelection()">Clear selection</button></p>
+    <form name="filterform"  action="" method="get" class="form form-inline">
+        {% for table, filter, dinput_name, dinput_step, dinput_type in list %}
+
+            <div class="page-header">
+                <h3>INPUT {{forloop.counter}} - {{ dinput_name }}</h3>
+            </div>
+            <p> For step {{ dinput_step  }}, {{ dinput_type }}</p>
+            <div class="row" >
+
+                <div class="col-lg-8">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">File selection</h3>
+                        </div>
+                        <div class="panel-body">
+                            {% render_table table %}
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-lg-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Filter</h3>
+                        </div>
+                        <div class="panel-body">
+                            <p><button type="submit" href="#1" id="clear_selection" onclick="return show_filter_c({{forloop.counter0 }});">Show filter</button></p>
+                            <div id="filters{{forloop.counter0 }}" style="display:none;">
+                                {% bootstrap_form filter.form layout='inline' %}
+                                {% bootstrap_button 'filter' %}
+
+                                <p><button type="submit" id="upbutton" onclick="return hide_filter_c({{forloop.counter0 }});">Hide</button></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+            </div>
+
+        {% endfor %}
+    </form>
+
+    <div class="page-header">
+            <h2>Select parameters</h2>
+     </div>
+
+    <div class="row" >
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading"><h3 class="panel-title">Parameters</h3></div>
+                <div class="panel-body">
+                    <form name="form" method="post" action="" enctype="multipart/form-data" id="form1">
+                        {% include "gfiles/form_table.html" %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}

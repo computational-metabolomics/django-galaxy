@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<input type="hidden" id="django_update_url" name="django_update_url" value="/galaxy/workflow_status_update/">
+<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="{% static "django_tables2_column_shifter/js/django_tables2_column_shifter.min.js" %}"> </script>
+<script src="{% static 'galaxy/status_updates.js' %}"></script>
+
+
+
+<div class="content container">
+    <div class="general">
+
+        <h1>Galaxy history items</h1>
+        {% load render_table from django_tables2 %}
+        {% render_table table %}
+
+
+    </div>
+</div>
+
+{% endblock %}
+
+
+
+
+
+
+

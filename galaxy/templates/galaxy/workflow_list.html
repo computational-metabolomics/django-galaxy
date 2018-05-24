@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+<link rel="stylesheet" href="{% static 'css/isa_tables.css' %}">
+{% block content %}
+<div class="content container">
+    <div class="general">
+        <h1>Registered workflows</h1>
+        <table class="table table-hover" id="form_table">
+            <thead>
+            <tr>
+                <th></th>
+                <th>Workflow name</th>
+                <th>Description</th>
+                <th>Added by</th>
+                <th>Run workflow</th>
+                <th>Accessible</th>
+            </tr>
+            </thead>
+            <tbody >
+            {% for w in object_list %}
+                <tr>
+                    <td>{{ forloop.counter }} </td>
+                    <td>{{ w.name }}</td>
+                    <td>{{ w.description }}</td>
+                    <td>{{ w.added_by }}</td>
+                    <td><a href="{% url 'runworkflow' wid=w.id %}">Run</a> </td>
+                    <td>{{ w.accessible }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        </div>
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+

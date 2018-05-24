@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block sb_admin_title %} Workflow Summary {% endblock sb_admin_title %}
+{% block sb_admin_subheading %}  {% endblock sb_admin_subheading %}
+{% block sb_admin_breadcrumb %}
+    <a href="{% url "index" %}"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
+    <a href="{% url "galaxy_summary" %}"> / Galaxy Summary </a>
+{% endblock sb_admin_breadcrumb %}
+{% block sb_admin_breadcrumb_active %} / Workflow Summary {% endblock sb_admin_breadcrumb_active %}
+
+{% block sb_admin_custom_js %}
+
+    <script src="{% static 'gfiles/show_hide_filters.js' %}"></script>
+    <script src="{% static 'gfiles/table_check.js' %}"></script>
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="{% static "django_tables2_column_shifter/js/django_tables2_column_shifter.min.js" %}"> </script>
+{% endblock sb_admin_custom_js %}
+
+
+
+{% block content %}
+    {% load render_table from django_tables2 %}
+    {% load bootstrap3 %}
+    {% load querystring from django_tables2 %}
+
+    <div class="page-header">
+        <h2>Choose Workflow</h2>
+    </div>
+
+    <p>The table below details all the registered Galaxy workflows associated with the current user. This
+                   can include workflows from multiple Galaxy instances.</p>
+
+    <p>To run any of the Galaxy instances, select the 'run' cell for the chosen workflow. The user
+       will then be redirected to a new page where they can choose the associated inputs to run the workflow</p>
+
+
+    {% include 'gfiles/table_with_filter_right_include.html' %}
+
+    <div class="page-header">
+        <h2>Sync Workflows</h2>
+    </div>
+    <p>If any updates are required of the workflow or if a workflow is to be deleted,
+        this should be done on the Galaxy site. After syncing the workflows will be updated here.</p>
+
+    <form name="form" method="post" action="" enctype="multipart/form-data">
+        {% csrf_token %}
+        <button type="submit" >sync</button>
+    </form>
+
+
+{% endblock %}

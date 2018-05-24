@@ -1,0 +1,1060 @@
+{
+    "a_galaxy_workflow": "true", 
+    "annotation": "", 
+    "format-version": "0.1", 
+    "name": "DMA-LCMS-MSMS-PROCESSING-ANNOATATION", 
+    "steps": {
+        "0": {
+            "annotation": "", 
+            "content_id": null, 
+            "errors": null, 
+            "id": 0, 
+            "input_connections": {}, 
+            "inputs": [], 
+            "label": "mzML files", 
+            "name": "Input dataset collection", 
+            "outputs": [], 
+            "position": {
+                "left": 200, 
+                "top": 309.5833282470703
+            }, 
+            "tool_id": null, 
+            "tool_state": "{\"collection_type\": \"list\"}", 
+            "tool_version": null, 
+            "type": "data_collection_input", 
+            "uuid": "50fc1669-22de-4ecf-b4bd-2b62fecf3c1a", 
+            "workflow_outputs": [
+                {
+                    "label": null, 
+                    "output_name": "output", 
+                    "uuid": "c7cf50f2-f60d-4298-b20a-cc22c8cff6be"
+                }
+            ]
+        }, 
+        "1": {
+            "annotation": "", 
+            "content_id": null, 
+            "errors": null, 
+            "id": 1, 
+            "input_connections": {}, 
+            "inputs": [], 
+            "label": "Filelist labels", 
+            "name": "Input dataset", 
+            "outputs": [], 
+            "position": {
+                "left": 649.5166473388672, 
+                "top": 362.9166717529297
+            }, 
+            "tool_id": null, 
+            "tool_state": "{}", 
+            "tool_version": null, 
+            "type": "data_input", 
+            "uuid": "a3aa6b5d-3289-4369-811a-85419ad18b25", 
+            "workflow_outputs": [
+                {
+                    "label": null, 
+                    "output_name": "output", 
+                    "uuid": "e778cf5f-40f1-4e24-9b6e-5589637db977"
+                }
+            ]
+        }, 
+        "2": {
+            "annotation": "", 
+            "content_id": null, 
+            "errors": null, 
+            "id": 2, 
+            "input_connections": {}, 
+            "inputs": [], 
+            "label": "SQLite database", 
+            "name": "Input dataset", 
+            "outputs": [], 
+            "position": {
+                "left": 1247.816635131836, 
+                "top": 1619.9667053222656
+            }, 
+            "tool_id": null, 
+            "tool_state": "{}", 
+            "tool_version": null, 
+            "type": "data_input", 
+            "uuid": "5e3e7325-06d1-4c79-8f91-666fe0a7feaf", 
+            "workflow_outputs": [
+                {
+                    "label": null, 
+                    "output_name": "output", 
+                    "uuid": "4cc60f9b-7b54-451e-a89c-db0f5616ba1c"
+                }
+            ]
+        }, 
+        "3": {
+            "annotation": "", 
+            "content_id": "testtoolshed.g2.bx.psu.edu/repos/lecorguille/xcms_xcmsset/abims_xcms_xcmsSet/2.2.0", 
+            "errors": null, 
+            "id": 3, 
+            "input_connections": {
+                "input": {
+                    "id": 0, 
+                    "output_name": "output"
+                }
+            }, 
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool xcms.xcmsSet", 
+                    "name": "input"
+                }
+            ], 
+            "label": null, 
+            "name": "xcms.xcmsSet", 
+            "outputs": [
+                {
+                    "name": "ticsRawTabCollection", 
+                    "type": "input"
+                }, 
+                {
+                    "name": "bpcsRawTabCollection", 
+                    "type": "input"
+                }, 
+                {
+                    "name": "xsetRData", 
+                    "type": "rdata.xcms.raw"
+                }, 
+                {
+                    "name": "log", 
+                    "type": "txt"
+                }, 
+                {
+                    "name": "ticsRawTab", 
+                    "type": "tabular"
+                }, 
+                {
+                    "name": "bpcsRawTab", 
+                    "type": "tabular"
+                }, 
+                {
+                    "name": "sampleMetadata", 
+                    "type": "tabular"
+                }, 
+                {
+                    "name": "ticsRawPdf", 
+                    "type": "pdf"
+                }, 
+                {
+                    "name": "bpcsRawPdf", 
+                    "type": "pdf"
+                }
+            ], 
+            "position": {
+                "left": 888.6333465576172, 
+                "top": 207.6666717529297
+            }, 
+            "post_job_actions": {
+                "HideDatasetActionbpcsRawPdf": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "bpcsRawPdf"
+                }, 
+                "HideDatasetActionlog": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "log"
+                }, 
+                "HideDatasetActionsampleMetadata": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "sampleMetadata"
+                }, 
+                "HideDatasetActionticsRawPdf": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "ticsRawPdf"
+                }
+            }, 
+            "tool_id": "testtoolshed.g2.bx.psu.edu/repos/lecorguille/xcms_xcmsset/abims_xcms_xcmsSet/2.2.0", 
+            "tool_shed_repository": {
+                "changeset_revision": "d71827ecd22c", 
+                "name": "xcms_xcmsset", 
+                "owner": "lecorguille", 
+                "tool_shed": "testtoolshed.g2.bx.psu.edu"
+            }, 
+            "tool_state": "{\"__page__\": null, \"options_scanrange\": \"{\\\"option\\\": \\\"hide\\\", \\\"__current_case__\\\": 1}\", \"methods\": \"{\\\"options_c\\\": {\\\"option\\\": \\\"hide\\\", \\\"__current_case__\\\": 1}, \\\"ppm\\\": \\\"6\\\", \\\"peakwidth\\\": \\\"20,50\\\", \\\"method\\\": \\\"centWave\\\", \\\"__current_case__\\\": 0}\", \"__rerun_remap_job_id__\": null, \"tic_bpc_pdf\": \"\\\"false\\\"\", \"input\": \"{\\\"__class__\\\": \\\"RuntimeValue\\\"}\"}", 
+            "tool_version": "2.2.0", 
+            "type": "tool", 
+            "uuid": "e1b51325-65dd-4a37-a470-5d52fbd449a1", 
+            "workflow_outputs": [
+                {
+                    "label": null, 
+                    "output_name": "ticsRawTabCollection", 
+                    "uuid": "ea6685ba-47ef-4cda-9a5b-7f77d2f155d9"
+                }, 
+                {
+                    "label": null, 
+                    "output_name": "ticsRawTab", 
+                    "uuid": "3e6a506b-b2a8-42e5-8abe-5ddfb97629d7"
+                }, 
+                {
+                    "label": null, 
+                    "output_name": "xsetRData", 
+                    "uuid": "a4abc49d-2e6a-4b01-8418-947f6658755c"
+                }, 
+                {
+                    "label": null, 
+                    "output_name": "bpcsRawTab", 
+                    "uuid": "55f0ab96-b4ab-42f2-a02e-a884ea67b356"
+                }, 
+                {
+                    "label": null, 
+                    "output_name": "bpcsRawTabCollection", 
+                    "uuid": "b18d542c-ca84-41d5-9c49-88e39e664119"
+                }
+            ]
+        }, 
+        "4": {
+            "annotation": "", 
+            "content_id": "147.188.141.120:9009/repos/tomnl/assess_purity_msms/assess_purity_msms/0.0.2", 
+            "errors": null, 
+            "id": 4, 
+            "input_connections": {
+                "mzML_data|source": {
+                    "id": 0, 
+                    "output_name": "output"
+                }
+            }, 
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool assess_purity_msms", 
+                    "name": "mzML_data"
+                }
+            ], 
+            "label": null, 
+            "name": "assess_purity_msms", 
+            "outputs": [
+                {
+                    "name": "purity_msms", 
+                    "type": "tsv"
+                }, 
+                {
+                    "name": "purity_msms_rdata", 
+                    "type": "rdata"
+                }
+            ], 
+            "position": {
+                "left": 927.6500091552734, 
+                "top": 1346.9833068847656
+            }, 
+            "post_job_actions": {
+                "HideDatasetActionpurity_msms": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "purity_msms"
+                }, 
+                "HideDatasetActionpurity_msms_rdata": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "purity_msms_rdata"
+                }
+            }, 
+            "tool_id": "147.188.141.120:9009/repos/tomnl/assess_purity_msms/assess_purity_msms/0.0.2", 
+            "tool_shed_repository": {
+                "changeset_revision": "2d03bae72795", 
+                "name": "assess_purity_msms", 
+                "owner": "tomnl", 
+                "tool_shed": "147.188.141.120:9009"
+            }, 
+            "tool_state": "{\"isotopes\": \"{\\\"isotopes\\\": \\\"exclude_default\\\", \\\"__current_case__\\\": 1}\", \"nearest\": \"\\\"true\\\"\", \"iw_norm\": \"\\\"none\\\"\", \"offsets\": \"{\\\"__current_case__\\\": 1, \\\"offsets\\\": \\\"auto\\\"}\", \"__page__\": null, \"__rerun_remap_job_id__\": null, \"ilim\": \"\\\"0.05\\\"\", \"mostIntense\": \"\\\"true\\\"\", \"mzML_data\": \"{\\\"source\\\": {\\\"__class__\\\": \\\"RuntimeValue\\\"}, \\\"__current_case__\\\": 0, \\\"format\\\": \\\"mzML_files\\\"}\"}", 
+            "tool_version": "0.0.2", 
+            "type": "tool", 
+            "uuid": "bf9b86d6-ffdb-4449-a086-ea55972da683", 
+            "workflow_outputs": []
+        }, 
+        "5": {
+            "annotation": "", 
+            "content_id": "toolshed.g2.bx.psu.edu/repos/lecorguille/xcms_merge/xcms_merge/1.0.0", 
+            "errors": null, 
+            "id": 5, 
+            "input_connections": {
+                "images": {
+                    "id": 3, 
+                    "output_name": "xsetRData"
+                }, 
+                "sampleMetadata": {
+                    "id": 1, 
+                    "output_name": "output"
+                }
+            }, 
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool xcms.xcmsSet Merger", 
+                    "name": "images"
+                }, 
+                {
+                    "description": "runtime parameter for tool xcms.xcmsSet Merger", 
+                    "name": "sampleMetadata"
+                }
+            ], 
+            "label": null, 
+            "name": "xcms.xcmsSet Merger", 
+            "outputs": [
+                {
+                    "name": "xsetRData", 
+                    "type": "rdata.xcms.raw"
+                }
+            ], 
+            "position": {
+                "left": 908.6833343505859, 
+                "top": 564.1166687011719
+            }, 
+            "post_job_actions": {}, 
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/lecorguille/xcms_merge/xcms_merge/1.0.0", 
+            "tool_shed_repository": {
+                "changeset_revision": "47f9b1fd5ce6", 
+                "name": "xcms_merge", 
+                "owner": "lecorguille", 
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            }, 
+            "tool_state": "{\"images\": \"{\\\"__class__\\\": \\\"RuntimeValue\\\"}\", \"__page__\": null, \"__rerun_remap_job_id__\": null, \"sampleMetadata\": \"{\\\"__class__\\\": \\\"RuntimeValue\\\"}\"}", 
+            "tool_version": "1.0.0", 
+            "type": "tool", 
+            "uuid": "0f9d5a9b-23f5-4f70-afaf-c0cdeac6d144", 
+            "workflow_outputs": [
+                {
+                    "label": null, 
+                    "output_name": "xsetRData", 
+                    "uuid": "e5117b49-f23d-4482-8866-fe8458b80778"
+                }
+            ]
+        }, 
+        "6": {
+            "annotation": "", 
+            "content_id": "172.31.10.181:9009/repos/tomnl/track_rt_raw/track_rt_raw/0.0.6", 
+            "errors": null, 
+            "id": 6, 
+            "input_connections": {
+                "xset": {
+                    "id": 5, 
+                    "output_name": "xsetRData"
+                }
+            }, 
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool track_rt_raw", 
+                    "name": "xset"
+                }
+            ], 
+            "label": null, 
+            "name": "track_rt_raw", 
+            "outputs": [
+                {
+                    "name": "xset_with_rt_raw", 
+                    "type": "rdata"
+                }
+            ], 
+            "position": {
+                "left": 1207.5833587646484, 
+                "top": 625
+            }, 
+            "post_job_actions": {}, 
+            "tool_id": "172.31.10.181:9009/repos/tomnl/track_rt_raw/track_rt_raw/0.0.6", 
+            "tool_shed_repository": {
+                "changeset_revision": "3ed357053c80", 
+                "name": "track_rt_raw", 
+                "owner": "tomnl", 
+                "tool_shed": "172.31.10.181:9009"
+            }, 
+            "tool_state": "{\"__page__\": null, \"__rerun_remap_job_id__\": null, \"xset\": \"{\\\"__class__\\\": \\\"RuntimeValue\\\"}\"}", 
+            "tool_version": "0.0.7", 
+            "type": "tool", 
+            "uuid": "54a0ba53-e4eb-4935-8014-5a11a072d31f", 
+            "workflow_outputs": [
+                {
+                    "label": null, 
+                    "output_name": "xset_with_rt_raw", 
+                    "uuid": "ef5e8d7b-6b82-4dc6-9f5d-2107f10bf6f0"
+                }
+            ]
+        }, 
+        "7": {
+            "annotation": "", 
+            "content_id": "toolshed.g2.bx.psu.edu/repos/lecorguille/xcms_retcor/abims_xcms_retcor/2.1.0", 
+            "errors": null, 
+            "id": 7, 
+            "input_connections": {
+                "file_load_section|file_load_conditional|input": {
+                    "id": 0, 
+                    "output_name": "output"
+                }, 
+                "image": {
+                    "id": 6, 
+                    "output_name": "xset_with_rt_raw"
+                }
+            }, 
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool xcms.retcor", 
+                    "name": "image"
+                }
+            ], 
+            "label": null, 
+            "name": "xcms.retcor", 
+            "outputs": [
+                {
+                    "name": "xsetRData", 
+                    "type": "rdata.xcms.retcor"
+                }, 
+                {
+                    "name": "rplotsPdf", 
+                    "type": "pdf"
+                }, 
+                {
+                    "name": "ticsCorPdf", 
+                    "type": "pdf"
+                }, 
+                {
+                    "name": "bpcsCorPdf", 
+                    "type": "pdf"
+                }, 
+                {
+                    "name": "log", 
+                    "type": "txt"
+                }
+            ], 
+            "position": {
+                "left": 902.6333465576172, 
+                "top": 713.0666809082031
+            }, 
+            "post_job_actions": {
+                "HideDatasetActionbpcsCorPdf": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "bpcsCorPdf"
+                }, 
+                "HideDatasetActionlog": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "log"
+                }, 
+                "HideDatasetActionrplotsPdf": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "rplotsPdf"
+                }, 
+                "HideDatasetActionticsCorPdf": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "ticsCorPdf"
+                }
+            }, 
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/lecorguille/xcms_retcor/abims_xcms_retcor/2.1.0", 
+            "tool_shed_repository": {
+                "changeset_revision": "4bfef820569b", 
+                "name": "xcms_retcor", 
+                "owner": "lecorguille", 
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            }, 
+            "tool_state": "{\"file_load_section\": \"{\\\"file_load_conditional\\\": {\\\"input\\\": {\\\"__class__\\\": \\\"RuntimeValue\\\"}, \\\"file_load_select\\\": \\\"yes\\\", \\\"__current_case__\\\": 1}}\", \"__page__\": null, \"image\": \"{\\\"__class__\\\": \\\"RuntimeValue\\\"}\", \"__rerun_remap_job_id__\": null, \"methods\": \"{\\\"method\\\": \\\"obiwarp\\\", \\\"__current_case__\\\": 0, \\\"profStep\\\": \\\"1.0\\\"}\"}", 
+            "tool_version": "2.1.0", 
+            "type": "tool", 
+            "uuid": "53511e07-2326-4304-93d2-0991c55fe4a2", 
+            "workflow_outputs": [
+                {
+                    "label": null, 
+                    "output_name": "xsetRData", 
+                    "uuid": "89a3ba7c-47ec-4346-a933-e05cfc17c16b"
+                }
+            ]
+        }, 
+        "8": {
+            "annotation": "", 
+            "content_id": "toolshed.g2.bx.psu.edu/repos/lecorguille/xcms_group/abims_xcms_group/2.1.0", 
+            "errors": null, 
+            "id": 8, 
+            "input_connections": {
+                "image": {
+                    "id": 7, 
+                    "output_name": "xsetRData"
+                }
+            }, 
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool xcms.group", 
+                    "name": "image"
+                }
+            ], 
+            "label": null, 
+            "name": "xcms.group", 
+            "outputs": [
+                {
+                    "name": "xsetRData", 
+                    "type": "rdata.xcms.group"
+                }, 
+                {
+                    "name": "rplotsPdf", 
+                    "type": "pdf"
+                }, 
+                {
+                    "name": "variableMetadata", 
+                    "type": "tabular"
+                }, 
+                {
+                    "name": "dataMatrix", 
+                    "type": "tabular"
+                }, 
+                {
+                    "name": "log", 
+                    "type": "txt"
+                }
+            ], 
+            "position": {
+                "left": 913.6333465576172, 
+                "top": 968.0666809082031
+            }, 
+            "post_job_actions": {
+                "HideDatasetActiondataMatrix": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "dataMatrix"
+                }, 
+                "HideDatasetActionlog": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "log"
+                }, 
+                "HideDatasetActionrplotsPdf": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "rplotsPdf"
+                }, 
+                "HideDatasetActionvariableMetadata": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "variableMetadata"
+                }
+            }, 
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/lecorguille/xcms_group/abims_xcms_group/2.1.0", 
+            "tool_shed_repository": {
+                "changeset_revision": "4c8507667cd6", 
+                "name": "xcms_group", 
+                "owner": "lecorguille", 
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            }, 
+            "tool_state": "{\"peaklist\": \"{\\\"peaklistBool\\\": \\\"false\\\", \\\"__current_case__\\\": 1}\", \"image\": \"{\\\"__class__\\\": \\\"RuntimeValue\\\"}\", \"__rerun_remap_job_id__\": null, \"methods\": \"{\\\"density_options\\\": {\\\"option\\\": \\\"hide\\\", \\\"__current_case__\\\": 1}, \\\"minfrac\\\": \\\"0.5\\\", \\\"bw\\\": \\\"30.0\\\", \\\"__current_case__\\\": 0, \\\"mzwid\\\": \\\"0.25\\\", \\\"method\\\": \\\"density\\\"}\", \"__page__\": null}", 
+            "tool_version": "2.1.0", 
+            "type": "tool", 
+            "uuid": "7d1f48b4-862f-4ade-bace-c4bc546cff8b", 
+            "workflow_outputs": [
+                {
+                    "label": null, 
+                    "output_name": "xsetRData", 
+                    "uuid": "cdd5a60b-8609-4a78-95af-0f14c826a4af"
+                }
+            ]
+        }, 
+        "9": {
+            "annotation": "", 
+            "content_id": "172.31.10.181:9009/repos/tomnl/flag_remove_peaks/flag_remove_peaks/0.1.2", 
+            "errors": null, 
+            "id": 9, 
+            "input_connections": {
+                "xset_path": {
+                    "id": 8, 
+                    "output_name": "xsetRData"
+                }
+            }, 
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool flag_remove_peaks", 
+                    "name": "xset_path"
+                }, 
+                {
+                    "description": "runtime parameter for tool flag_remove_peaks", 
+                    "name": "blank_flag"
+                }
+            ], 
+            "label": null, 
+            "name": "flag_remove_peaks", 
+            "outputs": [
+                {
+                    "name": "peaklist_filtered", 
+                    "type": "tabular"
+                }, 
+                {
+                    "name": "removed_peaks", 
+                    "type": "tabular"
+                }, 
+                {
+                    "name": "xset_filtered", 
+                    "type": "rdata"
+                }
+            ], 
+            "position": {
+                "left": 920.7499847412109, 
+                "top": 1191.6999816894531
+            }, 
+            "post_job_actions": {
+                "HideDatasetActionpeaklist_filtered": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "peaklist_filtered"
+                }, 
+                "HideDatasetActionremoved_peaks": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "removed_peaks"
+                }, 
+                "HideDatasetActionxset_filtered": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "xset_filtered"
+                }
+            }, 
+            "tool_id": "172.31.10.181:9009/repos/tomnl/flag_remove_peaks/flag_remove_peaks/0.1.2", 
+            "tool_shed_repository": {
+                "changeset_revision": "826bb32608e4", 
+                "name": "flag_remove_peaks", 
+                "owner": "tomnl", 
+                "tool_shed": "172.31.10.181:9009"
+            }, 
+            "tool_state": "{\"__page__\": null, \"__rerun_remap_job_id__\": null, \"peak_removal\": \"{\\\"peak_removal\\\": \\\"\\\", \\\"__current_case__\\\": 0}\", \"sample_flag\": \"{\\\"sample_flag\\\": \\\"\\\", \\\"__current_case__\\\": 0}\", \"xset_path\": \"{\\\"__class__\\\": \\\"RuntimeValue\\\"}\", \"blank_flag\": \"{\\\"s2b\\\": \\\"10.0\\\", \\\"blank_class\\\": {\\\"__class__\\\": \\\"RuntimeValue\\\"}, \\\"ithres_blank\\\": \\\"NA\\\", \\\"rsd_i_blank\\\": \\\"NA\\\", \\\"__current_case__\\\": 1, \\\"minfrac_blank\\\": \\\"0.5\\\", \\\"rsd_rt_blank\\\": \\\"NA\\\", \\\"blank_flag\\\": \\\"update\\\"}\", \"advanced\": \"{\\\"__current_case__\\\": 0, \\\"advanced\\\": \\\"\\\"}\"}", 
+            "tool_version": "0.1.2", 
+            "type": "tool", 
+            "uuid": "5fa04310-20e1-4baa-b3d2-2ef644f370f6", 
+            "workflow_outputs": []
+        }, 
+        "10": {
+            "annotation": "", 
+            "content_id": "toolshed.g2.bx.psu.edu/repos/lecorguille/xcms_fillpeaks/abims_xcms_fillPeaks/2.1.0", 
+            "errors": null, 
+            "id": 10, 
+            "input_connections": {
+                "file_load_section|file_load_conditional|input": {
+                    "id": 0, 
+                    "output_name": "output"
+                }, 
+                "image": {
+                    "id": 9, 
+                    "output_name": "xset_filtered"
+                }
+            }, 
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool xcms.fillPeaks", 
+                    "name": "image"
+                }
+            ], 
+            "label": null, 
+            "name": "xcms.fillPeaks", 
+            "outputs": [
+                {
+                    "name": "xsetRData", 
+                    "type": "rdata.xcms.fillpeaks"
+                }, 
+                {
+                    "name": "variableMetadata", 
+                    "type": "tabular"
+                }, 
+                {
+                    "name": "dataMatrix", 
+                    "type": "tabular"
+                }, 
+                {
+                    "name": "log", 
+                    "type": "txt"
+                }
+            ], 
+            "position": {
+                "left": 912.2499847412109, 
+                "top": 1485.8500061035156
+            }, 
+            "post_job_actions": {
+                "HideDatasetActiondataMatrix": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "dataMatrix"
+                }, 
+                "HideDatasetActionlog": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "log"
+                }, 
+                "HideDatasetActionvariableMetadata": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "variableMetadata"
+                }
+            }, 
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/lecorguille/xcms_fillpeaks/abims_xcms_fillPeaks/2.1.0", 
+            "tool_shed_repository": {
+                "changeset_revision": "de0d85537ee3", 
+                "name": "xcms_fillpeaks", 
+                "owner": "lecorguille", 
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            }, 
+            "tool_state": "{\"__page__\": null, \"file_load_section\": \"{\\\"file_load_conditional\\\": {\\\"input\\\": {\\\"__class__\\\": \\\"RuntimeValue\\\"}, \\\"file_load_select\\\": \\\"yes\\\", \\\"__current_case__\\\": 1}}\", \"image\": \"{\\\"__class__\\\": \\\"RuntimeValue\\\"}\", \"method\": \"\\\"chrom\\\"\", \"peaklist\": \"{\\\"peaklistBool\\\": \\\"false\\\", \\\"__current_case__\\\": 1}\", \"__rerun_remap_job_id__\": null}", 
+            "tool_version": "2.1.0", 
+            "type": "tool", 
+            "uuid": "1c9d1e11-bb22-4571-aaa6-7c06e0551088", 
+            "workflow_outputs": [
+                {
+                    "label": null, 
+                    "output_name": "xsetRData", 
+                    "uuid": "cf1b2e5d-5500-490d-a044-6c707f518df0"
+                }
+            ]
+        }, 
+        "11": {
+            "annotation": "", 
+            "content_id": "172.31.10.181:9009/repos/tomnl/frag4feature/frag4feature/0.0.3", 
+            "errors": null, 
+            "id": 11, 
+            "input_connections": {
+                "pa": {
+                    "id": 4, 
+                    "output_name": "purity_msms_rdata"
+                }, 
+                "xset": {
+                    "id": 9, 
+                    "output_name": "xset_filtered"
+                }
+            }, 
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool frag4feature", 
+                    "name": "xset"
+                }, 
+                {
+                    "description": "runtime parameter for tool frag4feature", 
+                    "name": "pa"
+                }
+            ], 
+            "label": null, 
+            "name": "frag4feature", 
+            "outputs": [
+                {
+                    "name": "frag4feature_grouped_msms", 
+                    "type": "tsv"
+                }, 
+                {
+                    "name": "frag4feature_rdata", 
+                    "type": "rdata"
+                }
+            ], 
+            "position": {
+                "left": 1215.9666595458984, 
+                "top": 1299.0666809082031
+            }, 
+            "post_job_actions": {
+                "HideDatasetActionfrag4feature_grouped_msms": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "frag4feature_grouped_msms"
+                }, 
+                "HideDatasetActionfrag4feature_rdata": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "frag4feature_rdata"
+                }
+            }, 
+            "tool_id": "172.31.10.181:9009/repos/tomnl/frag4feature/frag4feature/0.0.3", 
+            "tool_shed_repository": {
+                "changeset_revision": "e490d79b0874", 
+                "name": "frag4feature", 
+                "owner": "tomnl", 
+                "tool_shed": "172.31.10.181:9009"
+            }, 
+            "tool_state": "{\"__page__\": null, \"convert2RawRT_f4f\": \"\\\"false\\\"\", \"__rerun_remap_job_id__\": null, \"mostIntense_f4f\": \"\\\"true\\\"\", \"xset\": \"{\\\"__class__\\\": \\\"RuntimeValue\\\"}\", \"plim_f4f\": \"\\\"0.0\\\"\", \"pa\": \"{\\\"__class__\\\": \\\"RuntimeValue\\\"}\", \"ppm_f4f\": \"\\\"10.0\\\"\"}", 
+            "tool_version": "0.0.3", 
+            "type": "tool", 
+            "uuid": "0610ead9-01cf-47a6-8174-963b428e11bd", 
+            "workflow_outputs": []
+        }, 
+        "12": {
+            "annotation": "", 
+            "content_id": "toolshed.g2.bx.psu.edu/repos/lecorguille/camera_annotate/abims_CAMERA_annotateDiffreport/2.2.0", 
+            "errors": null, 
+            "id": 12, 
+            "input_connections": {
+                "file_load_section|file_load_conditional|input": {
+                    "id": 0, 
+                    "output_name": "output"
+                }, 
+                "image": {
+                    "id": 10, 
+                    "output_name": "xsetRData"
+                }
+            }, 
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool CAMERA.annotate", 
+                    "name": "image"
+                }
+            ], 
+            "label": null, 
+            "name": "CAMERA.annotate", 
+            "outputs": [
+                {
+                    "name": "variableMetadata", 
+                    "type": "tabular"
+                }, 
+                {
+                    "name": "datamatrix", 
+                    "type": "tabular"
+                }, 
+                {
+                    "name": "rdata_quick_false", 
+                    "type": "rdata.camera.quick"
+                }, 
+                {
+                    "name": "rdata_quick_true", 
+                    "type": "rdata.camera.quick"
+                }, 
+                {
+                    "name": "output_diffreport", 
+                    "type": "text"
+                }
+            ], 
+            "position": {
+                "left": 911.3333587646484, 
+                "top": 1712.2167053222656
+            }, 
+            "post_job_actions": {
+                "HideDatasetActiondatamatrix": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "datamatrix"
+                }, 
+                "HideDatasetActionoutput_diffreport": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "output_diffreport"
+                }, 
+                "HideDatasetActionrdata_quick_true": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "rdata_quick_true"
+                }
+            }, 
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/lecorguille/camera_annotate/abims_CAMERA_annotateDiffreport/2.2.0", 
+            "tool_shed_repository": {
+                "changeset_revision": "1c30ff90f3ae", 
+                "name": "camera_annotate", 
+                "owner": "lecorguille", 
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            }, 
+            "tool_state": "{\"__page__\": null, \"groupfwhm\": \"{\\\"sigma\\\": \\\"6\\\", \\\"perfwhm\\\": \\\"0.6\\\"}\", \"file_load_section\": \"{\\\"file_load_conditional\\\": {\\\"input\\\": {\\\"__class__\\\": \\\"RuntimeValue\\\"}, \\\"file_load_select\\\": \\\"yes\\\", \\\"__current_case__\\\": 1}}\", \"diffreport\": \"{\\\"options\\\": {\\\"option\\\": \\\"hide\\\", \\\"__current_case__\\\": 1}}\", \"image\": \"{\\\"__class__\\\": \\\"RuntimeValue\\\"}\", \"findgeneral\": \"{\\\"mzabs\\\": \\\"0.015\\\", \\\"ppm\\\": \\\"5\\\"}\", \"quick_block\": \"{\\\"quick\\\": \\\"FALSE\\\", \\\"findadducts\\\": {\\\"polarity\\\": {\\\"__class__\\\": \\\"RuntimeValue\\\"}, \\\"rules_block\\\": {\\\"rules_select\\\": \\\"FALSE\\\", \\\"__current_case__\\\": 0, \\\"multiplier\\\": \\\"3\\\"}, \\\"max_peaks\\\": \\\"100\\\"}, \\\"groupcorr\\\": {\\\"calcCaS\\\": \\\"false\\\", \\\"calcCiS\\\": \\\"true\\\", \\\"pval\\\": \\\"0.05\\\", \\\"graphMethod\\\": \\\"hcs\\\", \\\"cor_eic_th\\\": \\\"0.75\\\", \\\"calcIso\\\": \\\"false\\\"}, \\\"__current_case__\\\": 0}\", \"export\": \"{\\\"convertRTMinute\\\": \\\"false\\\", \\\"numDigitsMZ\\\": \\\"4\\\", \\\"intval\\\": \\\"into\\\", \\\"numDigitsRT\\\": \\\"0\\\"}\", \"findisotopes\": \"{\\\"maxiso\\\": \\\"4\\\", \\\"maxcharge\\\": \\\"3\\\", \\\"minfrac\\\": \\\"0.5\\\"}\", \"__rerun_remap_job_id__\": null}", 
+            "tool_version": "2.2.0", 
+            "type": "tool", 
+            "uuid": "3fd86b75-a694-4f49-a4c8-eb1e2b086a68", 
+            "workflow_outputs": [
+                {
+                    "label": null, 
+                    "output_name": "rdata_quick_false", 
+                    "uuid": "e5b08bbb-d9e0-48b0-8ddc-e00675141b96"
+                }, 
+                {
+                    "label": null, 
+                    "output_name": "variableMetadata", 
+                    "uuid": "c7de82c5-e0b1-432d-abe0-45e96bb61e02"
+                }
+            ]
+        }, 
+        "13": {
+            "annotation": "", 
+            "content_id": "172.31.10.181:9009/repos/tomnl/spectral_matching/spectral_matching/0.0.11", 
+            "errors": null, 
+            "id": 13, 
+            "input_connections": {
+                "library_db_pth": {
+                    "id": 2, 
+                    "output_name": "output"
+                }, 
+                "pa": {
+                    "id": 4, 
+                    "output_name": "purity_msms_rdata"
+                }, 
+                "xset": {
+                    "id": 10, 
+                    "output_name": "xsetRData"
+                }
+            }, 
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool spectral_matching", 
+                    "name": "library_db_pth"
+                }, 
+                {
+                    "description": "runtime parameter for tool spectral_matching", 
+                    "name": "xset"
+                }, 
+                {
+                    "description": "runtime parameter for tool spectral_matching", 
+                    "name": "pa"
+                }
+            ], 
+            "label": null, 
+            "name": "spectral_matching", 
+            "outputs": [
+                {
+                    "name": "sqlite_results", 
+                    "type": "sqlite"
+                }, 
+                {
+                    "name": "scan_hits", 
+                    "type": "tsv"
+                }, 
+                {
+                    "name": "xcms_hits", 
+                    "type": "tsv"
+                }
+            ], 
+            "position": {
+                "left": 1465.816635131836, 
+                "top": 1469.9667053222656
+            }, 
+            "post_job_actions": {}, 
+            "tool_id": "172.31.10.181:9009/repos/tomnl/spectral_matching/spectral_matching/0.0.11", 
+            "tool_shed_repository": {
+                "changeset_revision": "0a46f8c9c7fd", 
+                "name": "spectral_matching", 
+                "owner": "tomnl", 
+                "tool_shed": "172.31.10.181:9009"
+            }, 
+            "tool_state": "{\"__page__\": null, \"library_sources\": \"\\\"massbank\\\"\", \"reload\": \"{\\\"reload_bool\\\": \\\"false\\\", \\\"__current_case__\\\": 0}\", \"instrument_types\": \"[\\\"CE-ESI-TOF\\\", \\\"ESI-ITFT\\\", \\\"ESI-ITTOF\\\", \\\"ESI-QTOF\\\", \\\"LC-ESI-IT\\\", \\\"LC-ESI-ITFT\\\", \\\"LC-ESI-ITTOF\\\", \\\"LC-ESI-QFT\\\", \\\"LC-ESI-QIT\\\", \\\"LC-ESI-QQ\\\", \\\"LC-ESI-QTOF\\\", \\\"LC-ESI-TOF\\\"]\", \"__rerun_remap_job_id__\": null, \"xset\": \"{\\\"__class__\\\": \\\"RuntimeValue\\\"}\", \"library_db_pth\": \"{\\\"__class__\\\": \\\"RuntimeValue\\\"}\", \"pol\": \"\\\"positive\\\"\", \"pa\": \"{\\\"__class__\\\": \\\"RuntimeValue\\\"}\", \"ppm_tol_prec\": \"\\\"5.0\\\"\", \"score_thres\": \"\\\"0.6\\\"\", \"ppm_tol_prod\": \"\\\"10.0\\\"\", \"advanced\": \"{\\\"topncond\\\": {\\\"topnbool\\\": \\\"false\\\", \\\"__current_case__\\\": 0}, \\\"ra_thres_t\\\": \\\"2.0\\\", \\\"scan_ids\\\": [], \\\"ra_thres_l\\\": \\\"0.0\\\"}\"}", 
+            "tool_version": "0.0.11", 
+            "type": "tool", 
+            "uuid": "62f72523-057d-44fa-8c90-b29a6cee0290", 
+            "workflow_outputs": [
+                {
+                    "label": null, 
+                    "output_name": "scan_hits", 
+                    "uuid": "1d4577c9-f1a1-41ef-902b-a4896b6f0f6e"
+                }, 
+                {
+                    "label": null, 
+                    "output_name": "xcms_hits", 
+                    "uuid": "91c32f68-d2bc-48aa-8760-9b038b61d4de"
+                }, 
+                {
+                    "label": null, 
+                    "output_name": "sqlite_results", 
+                    "uuid": "071056ba-b4d8-44c2-916d-ba2f4cadeb9c"
+                }
+            ]
+        }, 
+        "14": {
+            "annotation": "", 
+            "content_id": "toolshed.g2.bx.psu.edu/repos/mmonsoor/probmetab/Probmetab/1.1.0", 
+            "errors": null, 
+            "id": 14, 
+            "input_connections": {
+                "acquisition_options|file_load_section|file_load_conditional|input": {
+                    "id": 0, 
+                    "output_name": "output"
+                }, 
+                "acquisition_options|image": {
+                    "id": 12, 
+                    "output_name": "rdata_quick_false"
+                }
+            }, 
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool ProbMetab Tool", 
+                    "name": "acquisition_options"
+                }
+            ], 
+            "label": null, 
+            "name": "ProbMetab Tool", 
+            "outputs": [
+                {
+                    "name": "html_output", 
+                    "type": "html"
+                }, 
+                {
+                    "name": "tsv_output", 
+                    "type": "tabular"
+                }, 
+                {
+                    "name": "eics", 
+                    "type": "zip"
+                }, 
+                {
+                    "name": "sif_output", 
+                    "type": "tabular"
+                }, 
+                {
+                    "name": "variableMetadata", 
+                    "type": "tabular"
+                }, 
+                {
+                    "name": "CombineMolIon", 
+                    "type": "tabular"
+                }, 
+                {
+                    "name": "variableMetadata_Positive", 
+                    "type": "tabular"
+                }, 
+                {
+                    "name": "variableMetadata_Negative", 
+                    "type": "tabular"
+                }
+            ], 
+            "position": {
+                "left": 920.8166351318359, 
+                "top": 2005.1999816894531
+            }, 
+            "post_job_actions": {}, 
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/mmonsoor/probmetab/Probmetab/1.1.0", 
+            "tool_shed_repository": {
+                "changeset_revision": "52b222a626b0", 
+                "name": "probmetab", 
+                "owner": "mmonsoor", 
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            }, 
+            "tool_state": "{\"__page__\": null, \"getannot\": \"{\\\"option_toexclude\\\": {\\\"option\\\": \\\"hide\\\", \\\"__current_case__\\\": 1}, \\\"allowMiss\\\": \\\"true\\\"}\", \"acquisition_options\": \"{\\\"file_load_section\\\": {\\\"file_load_conditional\\\": {\\\"input\\\": {\\\"__class__\\\": \\\"RuntimeValue\\\"}, \\\"file_load_select\\\": \\\"yes\\\", \\\"__current_case__\\\": 1}}, \\\"image\\\": {\\\"__class__\\\": \\\"RuntimeValue\\\"}, \\\"mode\\\": \\\"one\\\", \\\"__current_case__\\\": 0}\", \"__rerun_remap_job_id__\": null, \"db\": \"{\\\"ppm_tol\\\": \\\"8\\\", \\\"kegg_db\\\": \\\"KEGG\\\"}\", \"export\": \"{\\\"html\\\": \\\"true\\\", \\\"prob\\\": \\\"count\\\"}\", \"reac2cor\": \"{\\\"opt\\\": \\\"cor\\\", \\\"pcorprob\\\": \\\"0.8\\\", \\\"corprob\\\": \\\"0.8\\\", \\\"corths\\\": \\\"0.75\\\"}\"}", 
+            "tool_version": "1.1.0", 
+            "type": "tool", 
+            "uuid": "7b25aebc-6df6-4cf1-a3dd-c172d547bea8", 
+            "workflow_outputs": [
+                {
+                    "label": null, 
+                    "output_name": "CombineMolIon", 
+                    "uuid": "6ba5ddda-0de4-4d58-a91f-44b07ef8dc83"
+                }, 
+                {
+                    "label": null, 
+                    "output_name": "variableMetadata_Negative", 
+                    "uuid": "ea363145-b075-4eb2-9a26-1a49d17a8edf"
+                }, 
+                {
+                    "label": null, 
+                    "output_name": "tsv_output", 
+                    "uuid": "2efd8eb0-13a5-4b17-9948-24f7de5319ea"
+                }, 
+                {
+                    "label": null, 
+                    "output_name": "eics", 
+                    "uuid": "40e14d8c-7b27-4105-883b-27edd008f18d"
+                }, 
+                {
+                    "label": null, 
+                    "output_name": "html_output", 
+                    "uuid": "6ccfe5bd-c655-44d4-b8db-dcc86ae54a0f"
+                }, 
+                {
+                    "label": null, 
+                    "output_name": "variableMetadata", 
+                    "uuid": "2ca7eb87-d144-4203-a77a-ea34bffc533b"
+                }, 
+                {
+                    "label": null, 
+                    "output_name": "sif_output", 
+                    "uuid": "9d097671-0d6c-4b2d-8ff1-76f1ebb793db"
+                }, 
+                {
+                    "label": null, 
+                    "output_name": "variableMetadata_Positive", 
+                    "uuid": "e9b8266b-a2f6-46f2-bf7b-304278108829"
+                }
+            ]
+        }
+    }, 
+    "tags": [], 
+    "uuid": "884f1db4-8648-419f-968a-1f8b267d6f19"
+}

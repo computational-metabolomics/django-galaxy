@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+<div class="content container">
+    <div class="general">
+
+        <h1>Sync Galaxy</h1>
+        <form name="form" method="post" action="" enctype="multipart/form-data">
+            {% csrf_token %}
+            <button type="submit" >Submit</button>
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}
+
+
+
+
+
+
+

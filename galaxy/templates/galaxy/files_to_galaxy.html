@@ -1,0 +1,23 @@
+{% extends "gfiles/table_file_select.html" %}
+{% load static %}
+{% block sb_admin_title %}
+    {% if library %}
+        Upload Files to Galaxy Data Library
+    {% else %}
+        Upload Files to Galaxy History
+    {% endif %}
+{% endblock sb_admin_title %}
+
+{% block sb_admin_subheading %}{% endblock sb_admin_subheading %}
+{% block sb_admin_breadcrumb %}
+    <a href="{% url "index" %}"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
+    / <a href="{% url "galaxy_summary" %}"> Galaxy Summary</a>
+{% endblock sb_admin_breadcrumb %}
+
+{% block sb_admin_breadcrumb_active %}
+    {% if library %}
+         / Upload Files to Galaxy Data Library
+    {% else %}
+         / Upload Files to Galaxy History
+    {% endif %}
+{% endblock sb_admin_breadcrumb_active %}
