@@ -112,7 +112,7 @@ def get_history_data(pk, user, name_filter=None):
     gi, gu = get_gi_gu(user, git)
     hc = HistoryClient(gi)
     hdatasets = hc.show_matching_datasets(hs.galaxy_id)
-
+    print hdatasets
     if name_filter:
         hdatasets = [h for h in hdatasets if h['name'] in name_filter]
 

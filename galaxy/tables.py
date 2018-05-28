@@ -1,5 +1,5 @@
 import django_tables2 as tables
-from galaxy.models import Workflow, History
+from galaxy.models import Workflow, History, GalaxyInstanceTracking
 from django_tables2.export.views import ExportMixin
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
@@ -9,6 +9,19 @@ from django_tables2.utils import A
 
 import os
 
+
+class GalaxyInstanceTrackingTable(ColumnShiftTable):
+
+
+
+    class Meta:
+        model = GalaxyInstanceTracking
+
+        attrs = {
+            ' class ': 'paleblue',
+        }
+
+        template = 'django_tables2/bootstrap.html'
 
 
 class ProgressColumn(tables.Column):

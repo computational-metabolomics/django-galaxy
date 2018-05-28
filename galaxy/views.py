@@ -9,7 +9,7 @@ import re
 # standard django
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import CreateView, View
+from django.views.generic import CreateView, View, ListView
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.db.models import Q
@@ -32,7 +32,7 @@ from .forms import WorkflowForm, FilesToGalaxyDataLibraryParamForm, \
     GenericFilesToGalaxyHistoryParamForm, GalaxyUserForm, WorkflowRunForm, GalaxyInstanceTrackingForm,\
     DeleteGalaxyHistoryForm, HistoryDataForm
 from .models import GalaxyInstanceTracking, GalaxyUser, Workflow, History, HistoryData
-from .tables import WorkflowStatusTable, WorkflowTable, HistoryTable, HistoryDataTable
+from .tables import WorkflowStatusTable, WorkflowTable, HistoryTable, HistoryDataTable, GalaxyInstanceTrackingTable
 from .filter import WorkflowFilter, HistoryFilter
 from galaxy.utils.upload_to_galaxy import f2dl_action, f2h_action
 from galaxy.utils.workflow_actions import run_galaxy_workflow, get_workflow_status, workflow_sync
@@ -58,6 +58,12 @@ class GalaxyInstanceCreateView(LoginRequiredMixin, CreateView):
     model = GalaxyInstanceTracking
     success_url = '/galaxy/success'
     form_class = GalaxyInstanceTrackingForm
+
+class GalaxySummaryView(LoginRequiredMixin, SingleTableMixin, ListView):
+    # initial = {'key': 'value'}
+    template_name = 'galaxy/galaxy_summary.html'
+    table_class = GalaxyInstanceTrackingTable
+    model = GalaxyInstanceTracking
 
 
 class GalaxyUserCreateView(LoginRequiredMixin, CreateView):
@@ -195,7 +201,7 @@ class FilesToGalaxyDataLib(LoginRequiredMixin, TableFileSelectMixin, GFileListVi
     form_class = FilesToGalaxyDataLibraryParamForm
     initial_context = {'library': True, 'django_url': '/galaxy/files_to_galaxy_datalib/'}
 
-    def save_form_param(self, form):
+    def save_form_param(self, request, form):
         user = request.user
         f2dl = form.save(commit=False)
         f2dl.added_by = user
@@ -573,10 +579,3 @@ def success(request):
 
 
 
-class GalaxySummaryView(LoginRequiredMixin, View):
-    # initial = {'key': 'value'}
-    template_name = 'galaxy/galaxy_summary.html'
-
-    def get(self, request, *args, **kwargs):
-
-        return render(request, self.template_name)

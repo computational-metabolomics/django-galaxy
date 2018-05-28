@@ -1,15 +1,14 @@
 {% extends 'base.html' %}
+{% load static %}
+{% block sb_admin_title %} Workflow Summary {% endblock sb_admin_title %}
+{% block sb_admin_subheading %}  {% endblock sb_admin_subheading %}
+{% block sb_admin_breadcrumb %}
+    <a href="{% url "index" %}"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
+{% endblock sb_admin_breadcrumb %}
+{% block sb_admin_breadcrumb_active %} / Success {% endblock sb_admin_breadcrumb_active %}
+
 {% block content %}
-	<div class="content container">
-        <div class="general">
-            <p>Success!</p>
-        </div>
-    </div>
+
+    <p>Success!</p>
+
 {% endblock %}
-
-
-
-
-
-
-

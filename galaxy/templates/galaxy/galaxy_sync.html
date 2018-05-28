@@ -1,24 +1,9 @@
-{% extends 'base.html' %}
-{% block content %}
-
-
-<div class="content container">
-    <div class="general">
-
-        <h1>Sync Galaxy</h1>
-        <form name="form" method="post" action="" enctype="multipart/form-data">
-            {% csrf_token %}
-            <button type="submit" >Submit</button>
-        </form>
-
-    </div>
-</div>
-
-{% endblock %}
-
-
-
-
-
-
-
+{% extends 'gfiles/simple_form.html' %}
+{% load static %}
+{% block sb_admin_title %}Galaxy sync {% endblock sb_admin_title %}
+{% block sb_admin_breadcrumb %}
+ <a href="{% url "index" %}"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
+ <a href="{% url "galaxy_summary" %}"> / DMA summary</a>
+{% endblock sb_admin_breadcrumb %}
+{% block sb_admin_breadcrumb_active %} / Galaxy sync {% endblock sb_admin_breadcrumb_active %}
+{% block panel_title %}Galaxy sync{% endblock panel_title %}
