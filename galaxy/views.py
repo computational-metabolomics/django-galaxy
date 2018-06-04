@@ -40,7 +40,7 @@ from galaxy.utils.history_actions import get_history_status, delete_galaxy_histo
     init_history_data_save_form, history_data_save_form
 from galaxy.utils.sync_files import sync_galaxy_files
 
-
+from django.conf import settings
 
 
 class GalaxyInstanceCreateView(LoginRequiredMixin, CreateView):

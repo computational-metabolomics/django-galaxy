@@ -2,6 +2,11 @@ import time
 import random
 import string
 import urllib
+import os
+
+import tempfile
+import shutil
+
 from datetime import datetime
 
 from bioblend.galaxy.histories import HistoryClient
@@ -9,6 +14,8 @@ from django.core.files import File
 
 from galaxy.models import GalaxyInstanceTracking, History
 from galaxy.utils.upload_to_galaxy import get_gi_gu
+from gfiles.utils.save_as_symlink import save_as_symlink
+from django.conf import settings
 
 def random_string(n):
     # https://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits-in-python
@@ -106,13 +113,16 @@ def delete_galaxy_histories(pks, purge, user):
         hs.delete()
 
 
-def get_history_data(pk, user, name_filter=None):
+def get_history_data(pk, user, name_filter=None, data_type=None):
     hs = History.objects.get(pk=pk)
     git = hs.galaxyinstancetracking
     gi, gu = get_gi_gu(user, git)
     hc = HistoryClient(gi)
     hdatasets = hc.show_matching_datasets(hs.galaxy_id)
-    print hdatasets
+
+    if data_type:
+        hdatasets = [h for h in hdatasets if h['extension'] in data_type]
+
     if name_filter:
         hdatasets = [h for h in hdatasets if h['name'] in name_filter]
 
@@ -127,11 +137,16 @@ def get_history_data(pk, user, name_filter=None):
 def history_data_save_form(user, history_internal_id, galaxy_dataset_id, history_data_obj):
     history_d = init_history_data_save_form(user, history_internal_id, galaxy_dataset_id)
 
-    result = urllib.urlretrieve(history_d['full_download_url'])
+    # If we can access the file from Galaxy directly we won't download
+    print 'history d', history_d
+    if history_d['abs_pth']:
+        history_data_obj = save_as_symlink(history_d['abs_pth'], history_d['name'], history_data_obj)
 
-    history_data_obj.data_file.save(history_d['name'], File(open(result[0])))
+    else:
+        data_pth = urllib.urlretrieve(history_d['full_download_url'])[0]
+        history_data_obj.data_file.save(history_d['name'], File(open(data_pth)))
+        history_data_obj.save()
 
-    history_data_obj.save()
 
     return history_data_obj
 
@@ -149,7 +164,17 @@ def init_history_data_save_form(user, history_internal_id, galaxy_dataset_id):
 
     history_d['full_download_url'] = h.galaxyinstancetracking.url + history_d['download_url']
 
+    history_d['abs_pth'] = ''
+
+    if hasattr(settings, 'GALAXY_ROOT_PATH'):
+        data_pth = history_d['file_name'].replace('/export/', '')
+        fullpth = os.path.join(settings.GALAXY_ROOT_PATH,  data_pth)
+        if os.path.exists(fullpth):
+            history_d['abs_pth'] = fullpth
+
     return history_d
+
+
 
 
 

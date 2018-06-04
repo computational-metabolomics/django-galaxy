@@ -12,7 +12,7 @@ def get_gi_gu(user, git):
     galaxy_url = git.url
     gi = GalaxyInstance(galaxy_url, key=gu.api_key)
     gi.verify = False
-    print 'CHECK', gi
+
     return gi, gu
 
 

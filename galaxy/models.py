@@ -7,7 +7,7 @@ from datetime import datetime
 import os
 from django_mysql.models import JSONField
 from gfiles.models import GenericFile
-
+from django.utils.text import slugify
 import json
 
 def workflow_file_store(instance, filename):
@@ -32,6 +32,11 @@ class GalaxyInstanceTracking(models.Model):
 
     def __str__(self):  # __unicode__ on Python 2
         return self.name
+
+    def save(self, *args, **kwargs):
+        self.name = slugify(self.name)
+
+        return super(GalaxyInstanceTracking, self).save(*args, **kwargs)
 
 
 class GalaxyUser(models.Model):
@@ -202,6 +207,7 @@ def history_data_file_store(instance, filename):
 class HistoryData(GenericFile):
     history = models.ForeignKey(History, on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
+
     # added_by = models.ForeignKey(User, on_delete=models.CASCADE)
     # create_time = models.CharField(max_length=200)
     # creating_job = models.CharField(max_length=200)
