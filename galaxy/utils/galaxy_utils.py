@@ -22,7 +22,7 @@ def create_library(lc, name='mogi'):
     if current_mogi:
         lib = current_mogi[0]
         if len(current_mogi) > 1:
-            print 'More than 1 library with {} name, using library with id {}'.format(name, lib.id)
+            print 'More than 1 library with {} name, using library for'.format(name), lib
     else:
         lib = lc.create_library(name='mogi')
     return lib
