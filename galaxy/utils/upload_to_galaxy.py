@@ -160,7 +160,7 @@ def add_files_2_galaxy_datalib_dir(lc, lib_id, folder_id, filelist, local_path=F
                 link_data_only = 'link_to_files'
             else:
                 link_data_only = None
-
+            print lib_id, filelist_str, folder_id,'auto',link_data_only
             uploaded_files = lc.upload_from_galaxy_filesystem(lib_id, filelist_str,
                                                               folder_id=folder_id,
                                                               file_type='auto', link_data_only=link_data_only)
