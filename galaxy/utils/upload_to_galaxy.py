@@ -150,6 +150,7 @@ def add_files_2_galaxy_datalib_dir(lc, lib_id, folder_id, filelist, local_path=F
     else:
         filechunks = get_filechunks(filelist)
         for filechunk in filechunks:
+            print filechunk
             if isinstance(filechunk, list):
                 filelist_str = '\n'.join(filechunk)
             else:
@@ -170,17 +171,23 @@ def add_files_2_galaxy_datalib_dir(lc, lib_id, folder_id, filelist, local_path=F
 
 
 def link_files_in_galaxy(uploaded_files, selected_files, git, library=True):
-    print selected_files
+
     if isinstance(selected_files, QuerySet):
         selected_ids = [f.id for f in selected_files]
     else:
         selected_ids = [f['id'] for f in selected_files]
 
-    gfls = [GalaxyFileLink(galaxy_library=library,
+    gfls = []
+    for i in range(0, len(uploaded_files)):
+        if gfls % 10 == 0:
+            print gfls
+            GalaxyFileLink.objects.bulk_create(gfls)
+            gfls= []
+        gfls.append(GalaxyFileLink(galaxy_library=library,
                            galaxy_id=uploaded_files[i]['id'],
                            genericfile_id=selected_ids[i],
-                           galaxyinstancetracking=git)
-                                                                            for i in range(0, len(uploaded_files))]
+                           galaxyinstancetracking=git))
+
     print 'CHECK', gfls
     GalaxyFileLink.objects.bulk_create(gfls)
 
