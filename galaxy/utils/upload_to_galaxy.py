@@ -179,7 +179,7 @@ def link_files_in_galaxy(uploaded_files, selected_files, git, library=True):
 
     gfls = []
     for i in range(0, len(uploaded_files)):
-        if gfls % 10 == 0:
+        if len(gfls) % 10 == 0:
             print gfls
             GalaxyFileLink.objects.bulk_create(gfls)
             gfls= []
