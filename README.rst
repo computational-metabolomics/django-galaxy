@@ -2,7 +2,9 @@
 django-galaxy
 =====
 
-ISA organisation for metabolomic studies with Django
+
+|Build Status (Travis)| |Py versions|
+
 
 Django interfacing with Galaxy. Backend using the bioblend API.
 
@@ -33,3 +35,10 @@ Quick start
     path('galaxy/', include('galaxy.urls')),
 
 3. Run `python manage.py migrate` to create the polls models.
+
+
+.. |Build Status (Travis)| image:: https://travis-ci.com/computational-metabolomics/django-galaxy.svg?branch=master
+   :target: https://travis-ci.com/computational-metabolomics/django-galaxy/
+
+.. |Py versions| image:: https://img.shields.io/pypi/pyversions/django-galaxy.svg?style=flat&maxAge=3600
+   :target: https://pypi.python.org/pypi/django-galaxy/

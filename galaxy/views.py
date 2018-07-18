@@ -217,7 +217,7 @@ class TableFileSelectMixin:
 
     def form_valid(self, request, form):
         # first save the form and the user who posted
-        return render(request, 'dma/submitted.html')
+        return render(request, 'gfiles/submitted.html')
 
 
 class FilesToGalaxyDataLib(LoginRequiredMixin, TableFileSelectMixin, GFileListView):
@@ -250,7 +250,7 @@ class FilesToGalaxyDataLib(LoginRequiredMixin, TableFileSelectMixin, GFileListVi
         f2dl_action(pks, f2dl, galaxy_pass=form.cleaned_data['galaxy_password'])
         # reset the form checkboxes
         request.session['selected_items'] = ''
-        return render(request, 'dma/submitted.html')
+        return render(request, 'gfiles/submitted.html')
 
 
 class GenericFilesToGalaxyHistory(LoginRequiredMixin, TableFileSelectMixin, GFileListView):
@@ -269,7 +269,7 @@ class GenericFilesToGalaxyHistory(LoginRequiredMixin, TableFileSelectMixin, GFil
         pks = request.POST.getlist("check")
 
         f2h_action(pks, f2h, galaxy_pass=form.cleaned_data['galaxy_password'])
-        return render(request, 'dma/submitted.html')
+        return render(request, 'gfiles/submitted.html')
 
 
 
@@ -474,7 +474,7 @@ class HistoryDataCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         self.save_form(form)
-        return render(self.request, 'dma/submitted.html')
+        return render(self.request, 'gfiles/submitted.html')
 
 
 
@@ -509,7 +509,7 @@ class HistoryListView(LoginRequiredMixin, TableFileSelectMixin,SingleTableMixin,
         pks = request.POST.getlist("check")
 
         delete_galaxy_histories(pks, purge=form.cleaned_data['purge'], user=request.user)
-        return render(request, 'dma/submitted.html')
+        return render(request, 'gfiles/submitted.html')
 
 
 
