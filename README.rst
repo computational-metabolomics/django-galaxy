@@ -1,10 +1,14 @@
 =====
-misa
+django-galaxy
 =====
 
 ISA organisation for metabolomic studies with Django
 
-Detailed documentation is in the "docs" directory (todo)
+Django interfacing with Galaxy. Backend using the bioblend API.
+
+`Galaxy <https://galaxyproject.org/>`__ is a web based workflow platform that can be used to perform bioinformatics in a reproducible and sharable environment.
+
+Further documentation available on `ReadTheDocs <https://mogi.readthedocs.io/en/latest/>`__
 
 Quick start
 -----------
@@ -15,6 +19,13 @@ Quick start
         ...
         'gfiles',
         'galaxy'
+
+        'django_tables2',
+        'django_tables2_column_shifter',
+        'django_filters',
+        'bootstrap3',
+        'django_sb_admin',
+
     ]
 
 2. Include the polls URLconf in your project urls.py like this::
