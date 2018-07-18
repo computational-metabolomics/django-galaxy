@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals, print_function
 #  python manage.py test misa -v 3 --keepdb
 #  coverage run --source='.' manage.py test galaxy -v 3 --keepdb
