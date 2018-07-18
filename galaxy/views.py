@@ -222,7 +222,7 @@ class TableFileSelectMixin:
 
 class FilesToGalaxyDataLib(LoginRequiredMixin, TableFileSelectMixin, GFileListView):
     '''
-    Select Files to be added to Galaxy Library
+    Select Files to be added to Galaxy data Library
 
     Inherit the GFileListView that view that shows current files and allows some basic filtering
     '''
@@ -416,6 +416,11 @@ class WorkflowRunView(LoginRequiredMixin, View):
 
 
 class WorkflowStatus(LoginRequiredMixin, View):
+    '''
+    View available Galaxy. If any new workflows are added to a Galaxy instance the user should sync first before
+    they can be seen in the table.
+    '''
+
     # template_name = 'galaxy/status.html'
 
     def get(self, request, *args, **kwargs):
