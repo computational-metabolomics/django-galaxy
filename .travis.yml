@@ -8,6 +8,9 @@ install:
 - pip install .
 script: python runtests.py
 
+services:
+  - docker
+
 branches:
   only:
     - master
