@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+from __future__ import print_function, unicode_literals
 from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
 from datetime import datetime
 import os
-from django_mysql.models import JSONField
+#from django_mysql.models import JSONField
 from gfiles.models import GenericFile
 from django.utils.text import slugify
 import json
@@ -24,9 +24,10 @@ class GalaxyInstanceTracking(models.Model):
     Model for tracking Galaxy instances and associated ftp sites
     '''
 
-    url = models.URLField() # dodgy urls are checked at the form level
+    url = models.URLField()  # dodgy urls are checked at the form level
     name = models.CharField(max_length=200, unique=True)
-    ftp_host = models.CharField(max_length=200, blank=True, null=True, help_text='The ftp host and port are required if the file server '
+    ftp_host = models.CharField(max_length=200, blank=True, null=True,
+                                help_text='The ftp host and port are required if the file server '
                                                         'and galaxy server cannot be connected either direcly or via symlink)')
     ftp_port = models.IntegerField(blank=True, null=True, default=21)
 
@@ -61,7 +62,7 @@ class GalaxyUser(models.Model):
     # API currently not hashed, tried to follow the salting procedure (https://djangosnippets.org/snippets/1330/)
     # but think it does not work on Python2. Something to look into later but not essential for the work
     # we are doing. Also.... if you are worried about security you probably not going to use Galaxy anyway......
-    api_key = models.CharField(max_length=200,null=False)
+    api_key = models.CharField(max_length=200, null=False)
     galaxyinstancetracking = models.ForeignKey(GalaxyInstanceTracking, on_delete=models.CASCADE)
 
     def __str__(self):  # __unicode__ on Python 2
@@ -92,13 +93,12 @@ class Workflow(models.Model):
         super(Workflow, self).save(*args, **kwargs)
 
         data_inputs = []
-        print self.workflowjson
         steps = self.workflowjson['steps']
 
         WorkflowInput.objects.filter(workflow_id=self.id).delete()
 
         data_inputs = []
-        for step, details, in steps.iteritems():
+        for step, details, in steps.items():
             dtype = details['type']
             name = details['label']
             if dtype == 'data_input' or dtype == 'data_collection_input':
@@ -111,7 +111,7 @@ class Workflow(models.Model):
 
 class History(models.Model):
     update_time = models.CharField(max_length=200)
-    galaxyinstancetracking = models.ForeignKey(GalaxyInstanceTracking, on_delete=models.CASCADE, null=True)
+    galaxyinstancetracking = models.ForeignKey(GalaxyInstanceTracking, null=True, on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
 
     empty = models.IntegerField()
@@ -160,7 +160,7 @@ class WorkflowRun(models.Model):
 class GalaxyFileLink(models.Model):
     galaxy_id = models.CharField(max_length=250)
     galaxy_library = models.BooleanField(null=False, default=True)
-    genericfile = models.ForeignKey(GenericFile)
+    genericfile = models.ForeignKey(GenericFile, on_delete=models.CASCADE)
     galaxyinstancetracking = models.ForeignKey(GalaxyInstanceTracking, on_delete=models.CASCADE)
     removed = models.BooleanField(default=False, help_text='if the Galaxy file has either been purged or deleted. However'
                                                    ' the "deleted" options does not seem to be recorded correctly'

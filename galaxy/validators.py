@@ -6,7 +6,5 @@ from bioblend.galaxy.libraries import LibraryClient
 def test_galaxy_connection(url):
 
 
-
-
-    if not len(code_l) == 7:
-        raise ValidationError()
+    # if not len(code_l) == 7:
+    #     raise ValidationError()

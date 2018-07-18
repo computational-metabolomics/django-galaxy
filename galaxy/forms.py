@@ -1,16 +1,12 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-# general python
-import urllib2
-import httplib2
-import ssl
+from __future__ import print_function, unicode_literals
 
+# general python
 from bioblend.galaxy import GalaxyInstance
 from bioblend.galaxy.workflows import WorkflowClient
 from bioblend.galaxy.client import ConnectionError
 
 # standard django
-from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 from django import forms
 from django.contrib.auth.models import User
@@ -22,8 +18,13 @@ from django.contrib.auth.models import User
 # none
 
 # django 'this' app
-from .models import WorkflowRun, Workflow, GalaxyUser, \
-    GalaxyInstanceTracking, FilesToGalaxyDataLibraryParam, GenericFilesToGalaxyHistoryParam, HistoryData
+from .models import (WorkflowRun,
+                     Workflow,
+                     GalaxyUser,
+                     GalaxyInstanceTracking,
+                     FilesToGalaxyDataLibraryParam,
+                     GenericFilesToGalaxyHistoryParam,
+                     HistoryData)
 
 
 
@@ -77,7 +78,7 @@ class GalaxyUserForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = self.cleaned_data
-        print self.user
+        print(self.user)
 
         # check to make sure a duplicate entry is not being submitted
         git = cleaned_data['galaxyinstancetracking']
@@ -141,8 +142,6 @@ class WorkflowForm(forms.ModelForm):
         if any(self.errors):
             return self.errors
 
-        print cleaned_data
-
         # Check galaxy is accessible and works
         user = User.objects.get(username=self.user)
         git = cleaned_data['galaxyinstancetracking']
@@ -161,11 +160,9 @@ class WorkflowForm(forms.ModelForm):
         return cleaned_data
 
 def check_galaxy(api_key, galaxy_url):
-    print 'CHECK1'
     gi = GalaxyInstance(galaxy_url, key=api_key)
     gi.verify = False
     wc = WorkflowClient(gi)
-    print 'CHECK2'
     try:
         wc.get_workflows()
     except ConnectionError as e:

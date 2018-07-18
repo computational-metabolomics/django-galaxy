@@ -1,5 +1,7 @@
+from __future__ import print_function
 import os
 from ftplib import FTP
+from past.builtins import xrange
 
 from bioblend.galaxy import GalaxyInstance
 from bioblend.galaxy.libraries import LibraryClient
@@ -33,7 +35,7 @@ def f2dl_action(gfile_ids, f2dl_param, galaxy_pass):
     # get full paths from database
     filelist = files2paths(selected_files)
     if not filelist:
-        print 'filelist empty'
+        print('filelist empty')
         return []
 
     # Create the folders in Galaxy data library (can be nested if user used forward slashses)
@@ -128,7 +130,7 @@ def transfer_filelist_from_ftp(gi, filelist, history_name):
     uploaded_files = []
     for f in filelist:
         upf = tc.upload_from_ftp(path=os.path.basename(f), history_id=hist['id'])['outputs'][0]
-        print upf
+        print(upf)
         uploaded_files.append(upf)
     return uploaded_files, hist
 
@@ -150,7 +152,7 @@ def add_files_2_galaxy_datalib_dir(lc, lib_id, folder_id, filelist, local_path=F
     else:
         filechunks = get_filechunks(filelist)
         for filechunk in filechunks:
-            print filechunk
+            print(filechunk)
             if isinstance(filechunk, list):
                 filelist_str = '\n'.join(filechunk)
             else:
@@ -160,7 +162,7 @@ def add_files_2_galaxy_datalib_dir(lc, lib_id, folder_id, filelist, local_path=F
                 link_data_only = 'link_to_files'
             else:
                 link_data_only = None
-            print lib_id, filelist_str, folder_id,'auto',link_data_only
+            print(lib_id, filelist_str, folder_id,'auto',link_data_only)
             uploaded_files = lc.upload_from_galaxy_filesystem(lib_id, filelist_str,
                                                               folder_id=folder_id,
                                                               file_type='auto', link_data_only=link_data_only)
@@ -180,15 +182,15 @@ def link_files_in_galaxy(uploaded_files, selected_files, git, library=True):
     gfls = []
     for i in range(0, len(uploaded_files)):
         if len(gfls) % 10 == 0:
-            print gfls
+            print(gfls)
             GalaxyFileLink.objects.bulk_create(gfls)
-            gfls= []
+            gfls = []
         gfls.append(GalaxyFileLink(galaxy_library=library,
                            galaxy_id=uploaded_files[i]['id'],
                            genericfile_id=selected_ids[i],
                            galaxyinstancetracking=git))
 
-    print 'CHECK', gfls
+    print('CHECK', gfls)
     GalaxyFileLink.objects.bulk_create(gfls)
 
 
@@ -200,7 +202,7 @@ def f2h_action(gfile_ids, f2h, galaxy_pass):
     filelist = files2paths(selected_files)
 
     if not filelist:
-        print 'filelist empty'
+        print('filelist empty')
         return []
 
     gu = GalaxyUser.objects.get(user=user, galaxyinstancetracking=git)
@@ -210,7 +212,7 @@ def f2h_action(gfile_ids, f2h, galaxy_pass):
     gi.verify=False
 
     filelist = files2paths(selected_files)
-    print 'ftp_host and port', git.ftp_host, git.ftp_port, gu.email, galaxy_pass
+    print('ftp_host and port', git.ftp_host, git.ftp_port, gu.email, galaxy_pass)
     send_to_ftp(filelist, host=git.ftp_host, port=git.ftp_port, user=gu.email, password=galaxy_pass)
 
     uploaded_files, hist = transfer_filelist_from_ftp(gi, filelist, history_name=history_name)

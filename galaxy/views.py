@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+from __future__ import unicode_literals, print_function
 # general python
 import json
 from datetime import datetime
@@ -28,19 +28,48 @@ from gfiles.filter import GFileFilter
 from gfiles.tables import GFileTable
 
 # django 'this' app
-from .forms import WorkflowForm, FilesToGalaxyDataLibraryParamForm, \
-    GenericFilesToGalaxyHistoryParamForm, GalaxyUserForm, WorkflowRunForm, GalaxyInstanceTrackingForm,\
-    DeleteGalaxyHistoryForm, HistoryDataForm
-from .models import GalaxyInstanceTracking, GalaxyUser, Workflow, History, HistoryData
-from .tables import WorkflowStatusTable, WorkflowTable, HistoryTable, HistoryDataTable, GalaxyInstanceTrackingTable
+from .forms import (
+    WorkflowForm,
+    FilesToGalaxyDataLibraryParamForm,
+    GenericFilesToGalaxyHistoryParamForm,
+    GalaxyUserForm,
+    WorkflowRunForm,
+    GalaxyInstanceTrackingForm,
+    DeleteGalaxyHistoryForm,
+    HistoryDataForm
+)
+from .models import (
+    GalaxyInstanceTracking,
+    GalaxyUser,
+    Workflow,
+    History,
+    HistoryData
+)
+from .tables import (
+    WorkflowStatusTable,
+    WorkflowTable,
+    HistoryTable,
+    HistoryDataTable,
+    GalaxyInstanceTrackingTable
+)
 from .filter import WorkflowFilter, HistoryFilter
-from galaxy.utils.upload_to_galaxy import f2dl_action, f2h_action
-from galaxy.utils.workflow_actions import run_galaxy_workflow, get_workflow_status, workflow_sync
-from galaxy.utils.history_actions import get_history_status, delete_galaxy_histories, get_history_data,\
-    init_history_data_save_form, history_data_save_form
-from galaxy.utils.sync_files import sync_galaxy_files
 
-from django.conf import settings
+from galaxy.utils.upload_to_galaxy import f2dl_action, f2h_action
+from galaxy.utils.sync_files import sync_galaxy_files
+from galaxy.utils.workflow_actions import (
+    run_galaxy_workflow,
+    get_workflow_status,
+    workflow_sync
+)
+from galaxy.utils.history_actions import (
+    get_history_status,
+    delete_galaxy_histories,
+    get_history_data,
+    init_history_data_save_form,
+    history_data_save_form
+)
+
+
 
 
 class GalaxyInstanceCreateView(LoginRequiredMixin, CreateView):
@@ -212,7 +241,6 @@ class FilesToGalaxyDataLib(LoginRequiredMixin, TableFileSelectMixin, GFileListVi
         return f2dl
 
     def form_valid(self, request, form):
-        print 'CHECK CHECK FORM VALID'
         # first save the form and the user who posted
         f2dl = self.save_form_param(request, form)
 
@@ -305,13 +333,13 @@ class WorkflowRunView(LoginRequiredMixin, View):
             data_input_names.append(di.name)
             data_input_steps.append(di.step)
             data_input_types.append(di.datatype)
-            print 'name', di.name
+            print('name', di.name)
             mtch = re.match('.*\((.*)\).*', di.name)
 
             if mtch:
                 filetypes = mtch.group(1)
                 filetype_l = filetypes.split(',')
-                print 'FILETYPE LIST', filetype_l
+                print('FILETYPE LIST', filetype_l)
 
                 filetype_l = [f.strip() for f in filetype_l]
                 # https://stackoverflow.com/questions/4824759/django-query-using-contains-each-value-in-a-list
@@ -319,9 +347,9 @@ class WorkflowRunView(LoginRequiredMixin, View):
                 # will output something like this
                 # <Q: (OR: ('original_filename__icontains', '.txt'), ('original_filename__icontains', '.tsv'),
                 # ('original_filename__icontains', '.tabular'))>
-                print query
+                print(query)
                 gfqs_f = gfqs.filter(query)
-                print gfqs_f
+                print(gfqs_f)
             else:
                 gfqs_f = gfqs
 
@@ -357,7 +385,6 @@ class WorkflowRunView(LoginRequiredMixin, View):
         l = self.page_setup(request)
 
         if request.is_ajax():
-            print 'CHECK CHECK'
             # the ajax is used to get to record the chosen files
             request = ajax_post_selected(request)
             return render(request, self.template_name, {'form': form, 'list': l, 'wid':self.kwargs['wid']})
@@ -487,7 +514,6 @@ class HistoryListView(LoginRequiredMixin, TableFileSelectMixin,SingleTableMixin,
 
 
 def history_status_update(request):
-    print 'CHECK CHECK'
     data = get_history_status(request.user)
     return JsonResponse({'table_data':data})
 
@@ -543,19 +569,15 @@ def selected_items_2_pks(selected_items):
             if not table_id in pkd:
                 pkd[table_id] = []
             pkd[table_id].append(pk)
-    print pkd
     return pkd
 
 
 def ajax_post_selected(request):
-    print 'CHECK CHECK POST AJAX'
     # request dictionary
     rd = json.loads(request.body)
 
-    print rd
     if 'selected_items' in request.session and request.session['selected_items']:
         # session dictionary
-        print 'CHECK', request.session['selected_items']
         # if isinstance(request.session['selected_items'], str) or isinstance(request.session['selected_items'], unicode):
         sd = json.loads(request.session['selected_items'])
         # else:
@@ -566,11 +588,8 @@ def ajax_post_selected(request):
             sd[k] = v
 
         request.session['selected_items'] = json.dumps(sd)
-        print 'after added', request.session['selected_items']
     else:
         request.session['selected_items'] = json.dumps(rd['selected_items'])
-
-    print 'CHECK pos ajax end'
 
     return request
 

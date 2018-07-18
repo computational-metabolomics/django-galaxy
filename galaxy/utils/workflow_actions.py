@@ -1,3 +1,4 @@
+from __future__ import print_function
 import json
 import os
 import time
@@ -145,12 +146,12 @@ def run_galaxy_workflow(wid, user, git, pkd, l, history_name, library):
     workflow_input_d = get_workflow_inputs(l, pkd, gi, git, history_name, library)
 
     wc = WorkflowClient(gi)
-    print workflow_input_d
+    print(workflow_input_d)
     workflow = Workflow.objects.get(id=wid)
 
     wf = wc.get_workflows(workflow_id=workflow.galaxy_id)[0]
 
-    print 'CHECK CHECK', wf
+    print('CHECK CHECK', wf)
 
     wfi = wc.invoke_workflow(wf['id'], inputs=workflow_input_d,
                        import_inputs_to_history=True, history_name='{}_({})'.format(history_name, st))
@@ -169,32 +170,32 @@ def get_workflow_inputs(l, pkd, gi, git, history_name, library):
 
     for table, filter, dinput_name, dinput_step, dinput_type in l:
         pks = pkd[str(table.prefix)]
-        print 'PKS before ', pks
+        print('PKS before ', pks)
         #  will get multiple inputs here because we can multiple galaxyfilelinks per file. They are all the same
         # file so we can just get unique
         selected_objects = GenericFile.objects.filter(
             pk__in=pks
         ).distinct()
 
-        print 'PKS', pks, dinput_type
-        print selected_objects
+        print('PKS', pks, dinput_type)
+        print(selected_objects)
 
         if dinput_type=='data_input':
-            print 'DATA INPUT'
+            print('DATA INPUT')
             # can only use the first selection (need to use data collection for multiple files, currently this
             # approach doesn't support using 'multiple files' as input as not possible with BioBlend (i think)
             s = selected_objects[0]
             gid = s.galaxyfilelink_set.filter(galaxy_library=library)[0].galaxy_id
 
-            print gid
+            print(gid)
 
             worklow_inputs_d[dinput_step] = {'id':gid, 'src':'ld'}
 
         elif dinput_type == 'data_collection_input':
-            print 'DATA INPUT COLLECTION'
+            print('DATA INPUT COLLECTION')
             element_identifiers = []
             hist = hc.create_history('{}-(data-history-{})-{}'.format(history_name, dinput_name, st))
-            print 'hist', hist
+
 
             for s in selected_objects:
                 gfl = s.galaxyfilelink_set.filter(galaxy_library=library)[0]
@@ -205,9 +206,6 @@ def get_workflow_inputs(l, pkd, gi, git, history_name, library):
                                                 'name': os.path.basename(dataset['file_name']),
                                                 'src': 'hda'})
                 else:
-                    print gfl.galaxy_id
-                    print gi
-                    print git.url
                     element_identifiers.append({'id': gfl.galaxy_id,
                                                 'name': gfl.genericfile.data_file.name,
                                                 'src': 'hda'})
@@ -227,7 +225,7 @@ def check_workflow_data_inputs(wid, wc):
     steps = wjson['steps']
     data_inputs = []
     for step, details, in steps.iteritems():
-        print 'DETAILS', details
+        print('DETAILS', details)
         dtype = details['type']
         name = details['label']
         if dtype == 'data_input' or dtype == 'data_collection_input':
