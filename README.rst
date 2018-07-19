@@ -15,12 +15,13 @@ Further documentation available on `ReadTheDocs <https://mogi.readthedocs.io/en/
 Quick start
 -----------
 
-1. Add "galaxy" and django application dependencies to your INSTALLED_APPS setting like this (galaxy should come after gfiles)::
+1. Add "galaxy" and django application dependencies to your INSTALLED_APPS setting like this (galaxy should come before gfiles)::
 
     INSTALLED_APPS = [
         ...
-        'gfiles',
         'galaxy',
+        'gfiles',
+
 
         'django_tables2',
         'bootstrap3',
@@ -32,7 +33,7 @@ Quick start
 2. Include the polls URLconf in your project urls.py like this::
 
     url(r'^', include('gfiles.urls')),
-    path('galaxy/', include('galaxy.urls')),
+    url('galaxy/', include('galaxy.urls')),
 
 3. Run `python manage.py migrate` to create the models.
 

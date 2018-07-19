@@ -1,14 +1,6 @@
 django==1.11
-celery
-django_celery_results
-six
-future
-django-filter==1.1
-django_tables2
-django_bootstrap3
-django_tables2_column_shifter
-django_sb_admin
+
 django-rest-framework
 django-gfiles
-tablib
+
 bioblend
