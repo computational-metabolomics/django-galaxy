@@ -1,5 +1,5 @@
 import django_tables2 as tables
-from galaxy.models import Workflow, History, GalaxyInstanceTracking
+from galaxy.models import Workflow, History, GalaxyInstanceTracking, GalaxyUser
 from django_tables2.export.views import ExportMixin
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
@@ -11,8 +11,9 @@ import os
 
 
 class GalaxyInstanceTrackingTable(ColumnShiftTable):
-
-
+    user_count = tables.LinkColumn('add_galaxy_instance', verbose_name='User count')
+    update = tables.LinkColumn('update_galaxy_instance', text='update', verbose_name='Update', args=[A('id')])
+    delete = tables.LinkColumn('delete_galaxy_instance', text='delete', verbose_name='Delete', args=[A('id')])
 
     class Meta:
         model = GalaxyInstanceTracking
@@ -21,7 +22,25 @@ class GalaxyInstanceTrackingTable(ColumnShiftTable):
             ' class ': 'paleblue',
         }
 
+        fields = (
+        'id', 'url', 'name', 'ftp_host', 'ftp_port', 'galaxy_root_path')
+
         template = 'django_tables2/bootstrap.html'
+
+
+class GalaxyUserTable(ColumnShiftTable):
+
+    update = tables.LinkColumn('update_galaxy_user', text='update', verbose_name='Update', args=[A('id')])
+    delete = tables.LinkColumn('delete_galaxy_user', text='delete', verbose_name='Delete', args=[A('id')])
+
+
+    class Meta:
+        model = GalaxyUser
+        attrs = {
+            ' class ': 'paleblue',
+        }
+        template = 'django_tables2/bootstrap.html'
+        fields = ['user', 'email', 'galaxyinstancetracking']
 
 
 class ProgressColumn(tables.Column):

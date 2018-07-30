@@ -1,5 +1,7 @@
 include LICENSE
 include README.rst
+include requirements.txt
 recursive-include galaxy/static *
 recursive-include galaxy/templates *
-recursive-include docs *
+recursive-include galaxy/tests/data *
+recursive-include galaxy/tests *

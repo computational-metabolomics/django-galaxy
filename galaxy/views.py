@@ -5,19 +5,21 @@ import json
 from datetime import datetime
 import operator
 import re
+import six
 
 # standard django
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import CreateView, View, ListView
+from django.views.generic import CreateView, View, ListView, DeleteView, UpdateView
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.db.models import Q
+from django.urls import reverse_lazy
 
 # django external apps
 from django_tables2 import RequestConfig
 import django_tables2 as tables
-from django_tables2.views import SingleTableMixin
+from django_tables2.views import SingleTableMixin, MultiTableMixin
 from django_filters.views import FilterView
 from django_tables2.export.views import ExportMixin
 
@@ -28,7 +30,7 @@ from gfiles.filter import GFileFilter
 from gfiles.tables import GFileTable
 
 # django 'this' app
-from .forms import (
+from galaxy.forms import (
     WorkflowForm,
     FilesToGalaxyDataLibraryParamForm,
     GenericFilesToGalaxyHistoryParamForm,
@@ -38,21 +40,26 @@ from .forms import (
     DeleteGalaxyHistoryForm,
     HistoryDataForm
 )
-from .models import (
+from galaxy.models import (
     GalaxyInstanceTracking,
     GalaxyUser,
     Workflow,
     History,
     HistoryData
 )
-from .tables import (
+from galaxy.tables import (
     WorkflowStatusTable,
     WorkflowTable,
     HistoryTable,
     HistoryDataTable,
-    GalaxyInstanceTrackingTable
+    GalaxyInstanceTrackingTable,
+    GalaxyUserTable
 )
-from .filter import WorkflowFilter, HistoryFilter
+from galaxy.filter import (
+    WorkflowFilter,
+    HistoryFilter,
+    GalaxyUserFilter
+)
 
 from galaxy.utils.upload_to_galaxy import f2dl_action, f2h_action
 from galaxy.utils.sync_files import sync_galaxy_files
@@ -72,6 +79,7 @@ from galaxy.utils.history_actions import (
 
 
 
+
 class GalaxyInstanceCreateView(LoginRequiredMixin, CreateView):
     '''
     Create a Galaxy instance to track in django. Note that the Galaxy needs to be accessible at the point of
@@ -85,14 +93,29 @@ class GalaxyInstanceCreateView(LoginRequiredMixin, CreateView):
     .. _galaxy docs: https://galaxyproject.org/ftp-upload/
     '''
     model = GalaxyInstanceTracking
-    success_url = '/galaxy/success'
+    success_url = reverse_lazy('galaxy_summary')
     form_class = GalaxyInstanceTrackingForm
+
+
+class GalaxyInstanceTrackingUpdateView(LoginRequiredMixin, UpdateView):
+    model = GalaxyInstanceTracking
+    success_url = reverse_lazy('galaxy_summary')
+    form_class = GalaxyInstanceTrackingForm
+
+
+class GalaxyInstanceTrackingDeleteView(DeleteView):
+    model = GalaxyInstanceTracking
+    success_url = reverse_lazy('list_ontologyterm')
+    template_name = 'galaxy/confirm_delete.html'
+
+
 
 class GalaxySummaryView(LoginRequiredMixin, SingleTableMixin, ListView):
     # initial = {'key': 'value'}
     template_name = 'galaxy/galaxy_summary.html'
     table_class = GalaxyInstanceTrackingTable
     model = GalaxyInstanceTracking
+
 
 
 class GalaxyUserCreateView(LoginRequiredMixin, CreateView):
@@ -128,6 +151,27 @@ class GalaxyUserCreateView(LoginRequiredMixin, CreateView):
     def get_initial(self):
         # show the most recent galaxy instance as default value
         return {'galaxyinstancetracking':GalaxyInstanceTracking.objects.last()}
+
+
+class GalaxyUserUpdateView(LoginRequiredMixin, UpdateView):
+    model = GalaxyUser
+    success_url = reverse_lazy('list_galaxy_user')
+    form_class = GalaxyUserForm
+
+
+class GalaxyUserDeleteView(DeleteView):
+    model = GalaxyUser
+    success_url = reverse_lazy('list_galaxy_user')
+    template_name = 'galaxy/confirm_delete.html'
+
+
+
+class GalaxyUserListView(LoginRequiredMixin, SingleTableMixin, ListView):
+    # initial = {'key': 'value'}
+    template_name = 'galaxy/galaxy_user_list.html'
+    table_class = GalaxyUserTable
+    model = GalaxyUser
+
 
 
 class GalaxySync(LoginRequiredMixin, View):
@@ -343,7 +387,7 @@ class WorkflowRunView(LoginRequiredMixin, View):
 
                 filetype_l = [f.strip() for f in filetype_l]
                 # https://stackoverflow.com/questions/4824759/django-query-using-contains-each-value-in-a-list
-                query = reduce(operator.or_, (Q(original_filename__icontains=item) for item in filetype_l))
+                query = six.reduce(operator.or_, (Q(original_filename__icontains=item) for item in filetype_l))
                 # will output something like this
                 # <Q: (OR: ('original_filename__icontains', '.txt'), ('original_filename__icontains', '.tsv'),
                 # ('original_filename__icontains', '.tabular'))>

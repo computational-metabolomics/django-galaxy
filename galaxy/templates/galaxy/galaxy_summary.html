@@ -3,7 +3,7 @@
 {% block sb_admin_subheading %}  {% endblock sb_admin_subheading %}
 {% block sb_admin_breadcrumb %} <a href="{% url "index" %}"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a> {% endblock sb_admin_breadcrumb %}
 {% block sb_admin_breadcrumb_active %} / Galaxy summary {% endblock sb_admin_breadcrumb_active %}
-{% block panel_title %}Galaxy Summary{% endblock panel_title %}
+{% block panel_title %}Galaxy Instances Summary{% endblock panel_title %}
 {% block preamble %}
 <blockquote class="blockquote-footer">
     <p class="mb-0"> Galaxy is an open, web-based platform for accessible, reproducible, and transparent computational biomedical research.
@@ -34,8 +34,8 @@
                 </div>
                 <div class="panel-body">
                    <div class="list-group">
-                    <a href="{% url "addgi" %}" class="list-group-item">Register Galaxy Instance</a>
-                    <a href="{% url "addguser" %}" class="list-group-item">Register Galaxy User</a>
+                    <a href="{% url "add_galaxy_instance" %}" class="list-group-item">Register Galaxy Instance</a>
+                    <a href="{% url "add_galaxy_user" %}" class="list-group-item">Register Galaxy User</a>
                     </div>
                 </div>
             </div>

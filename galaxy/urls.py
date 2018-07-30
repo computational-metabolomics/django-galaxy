@@ -3,9 +3,18 @@ from galaxy import views
 
 urlpatterns = [
 
-    url(r'galaxy_summary/$', views.GalaxySummaryView.as_view(), name='galaxy_summary'),
-    url(r'addgi/$', views.GalaxyInstanceCreateView.as_view(), name='addgi'),
-    url(r'addguser/$', views.GalaxyUserCreateView.as_view(), name='addguser'),
+    url(r'^$', views.GalaxySummaryView.as_view(), name='galaxy_summary'),
+    # galaxy instances
+    url(r'add_galaxy_instance/$', views.GalaxyInstanceCreateView.as_view(), name='add_galaxy_instance'),
+    url(r'update_galaxy_instance/(?P<pk>\d+)/$', views.GalaxyInstanceTrackingUpdateView.as_view(), name='update_galaxy_instance'),
+    url(r'delete_galaxy_instance/(?P<pk>\d+)/$', views.GalaxyInstanceTrackingDeleteView.as_view(), name='delete_galaxy_instance'),
+
+    # galaxy users
+    url(r'add_galaxy_user/$', views.GalaxyUserCreateView.as_view(), name='add_galaxy_user'),
+    url(r'update_galaxy_user/(?P<pk>\d+)/$', views.GalaxyUserUpdateView.as_view(), name='update_galaxy_user'),
+    url(r'delete_galaxy_user/(?P<pk>\d+)/$', views.GalaxyUserDeleteView.as_view(), name='delete_galaxy_user'),
+    url(r'list_galaxy_user/$', views.GalaxyUserListView.as_view(), name='list_galaxy_user'),
+
     url(r'addworkflow/$', views.WorkflowCreateView.as_view(), name='addworkflow'),
     url(r'galaxy_sync/$', views.GalaxySync.as_view(), name='galaxy_sync'),
     url(r'workflow_summary/$', views.WorkflowListView.as_view(), name='workflow_summary'),

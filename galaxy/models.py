@@ -30,6 +30,9 @@ class GalaxyInstanceTracking(models.Model):
                                 help_text='The ftp host and port are required if the file server '
                                                         'and galaxy server cannot be connected either direcly or via symlink)')
     ftp_port = models.IntegerField(blank=True, null=True, default=21)
+    galaxy_root_path = models.CharField(max_length=500, blank=True, null=True, help_text='If the Galaxy instance is accessible'
+                                                                                         'either via a symlink or directly, the '
+                                                                                         'path should be included here')
 
     def __str__(self):  # __unicode__ on Python 2
         return self.name
@@ -38,6 +41,9 @@ class GalaxyInstanceTracking(models.Model):
         self.name = slugify(self.name)
 
         return super(GalaxyInstanceTracking, self).save(*args, **kwargs)
+
+    def user_count(self):
+        return len(GalaxyUser.objects.filter(galaxyinstancetracking_id=self.id))
 
 
 class GalaxyUser(models.Model):
