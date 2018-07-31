@@ -198,6 +198,7 @@ def get_workflow_inputs(l, pkd, gi, git, history_name, library):
 
 
             for s in selected_objects:
+                print(s)
                 gfl = s.galaxyfilelink_set.filter(galaxy_library=library)[0]
 
                 if library:

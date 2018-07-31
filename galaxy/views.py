@@ -6,6 +6,10 @@ from datetime import datetime
 import operator
 import re
 import six
+import sys
+
+if sys.version_info > (3, 0):
+    from functools import reduce
 
 # standard django
 from django.shortcuts import render
@@ -387,7 +391,7 @@ class WorkflowRunView(LoginRequiredMixin, View):
 
                 filetype_l = [f.strip() for f in filetype_l]
                 # https://stackoverflow.com/questions/4824759/django-query-using-contains-each-value-in-a-list
-                query = six.reduce(operator.or_, (Q(original_filename__icontains=item) for item in filetype_l))
+                query = reduce(operator.or_, (Q(original_filename__icontains=item) for item in filetype_l))
                 # will output something like this
                 # <Q: (OR: ('original_filename__icontains', '.txt'), ('original_filename__icontains', '.tsv'),
                 # ('original_filename__icontains', '.tabular'))>
@@ -610,7 +614,7 @@ def checkbox_selected(request):
 
 def selected_items_2_pks(selected_items):
     pkd = {}
-    for k, v in selected_items.iteritems():
+    for k, v in six.iteritems(selected_items):
         if v:
             kl = k.split('_')
             table_id = kl[0]
@@ -633,7 +637,7 @@ def ajax_post_selected(request):
         #     sd = request.session['selected_items']
 
 
-        for k, v in rd['selected_items'].iteritems():
+        for k, v in six.iteritems(rd['selected_items']):
             sd[k] = v
 
         request.session['selected_items'] = json.dumps(sd)

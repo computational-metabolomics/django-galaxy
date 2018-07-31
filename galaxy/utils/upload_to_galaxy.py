@@ -112,8 +112,9 @@ def send_to_ftp(filelist, host, port, user, password):
     ftp.login(user=user, passwd=password)
 
     for file in filelist:
+        print(file)
         fn = os.path.basename(file)
-        with open(file, 'r') as f:
+        with open(file, 'rb') as f:
             ftp.storbinary('STOR {}'.format(fn), f)
 
     ftp.close()
