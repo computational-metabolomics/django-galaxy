@@ -30,7 +30,7 @@ class GalaxyInstanceTracking(models.Model):
                                 help_text='The ftp host and port are required if the file server '
                                                         'and galaxy server cannot be connected either direcly or via symlink)')
     ftp_port = models.IntegerField(blank=True, null=True, default=21)
-    galaxy_root_path = models.CharField(max_length=500, blank=True, null=True, help_text='If the Galaxy instance is accessible'
+    galaxy_root_path = models.CharField(max_length=500, blank=True, null=True, help_text='If the Galaxy instance is accessible '
                                                                                          'either via a symlink or directly, the '
                                                                                          'path should be included here')
 
@@ -186,10 +186,10 @@ class FilesToGalaxyDataLibraryParam(models.Model):
     galaxyinstancetracking = models.ForeignKey(GalaxyInstanceTracking, on_delete=models.CASCADE)
     link2files = models.BooleanField(default=False)
     local_path = models.BooleanField(default=False)
-    ftp = models.BooleanField(default=True, help_text='Use FTP file transfer to copy the files over to the'
+    ftp = models.BooleanField(default=True, help_text='Use FTP file transfer to copy the files over to the '
                                                       'Galaxy instance')
     remove = models.BooleanField(default=False,
-                                 help_text='Remove any existing data for the selected ISA projects in the'
+                                 help_text='Remove any existing data for the selected ISA projects in the '
                                            ' Galaxy data libraries')
 
     def __str__(self):  # __unicode__ on Python 2
