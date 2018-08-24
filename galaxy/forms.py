@@ -12,7 +12,7 @@ from django import forms
 from django.contrib.auth.models import User
 
 # django external apps
-# none
+from dal import autocomplete
 
 # django custom user external apps
 # none
@@ -58,11 +58,7 @@ class GalaxyInstanceTrackingForm(forms.ModelForm):
 
     class Meta:
         model = GalaxyInstanceTracking
-        fields = '__all__'
-
-
-
-
+        fields = ('url', 'name', 'ftp_host', 'ftp_port', 'galaxy_root_path', 'public')
 
 
 class GalaxyUserForm(forms.ModelForm):
@@ -73,23 +69,23 @@ class GalaxyUserForm(forms.ModelForm):
     user details
     '''
     def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user', None)
+        self.internal_user = kwargs.pop('user', None)
         super(GalaxyUserForm, self).__init__(*args, **kwargs)
 
     def clean(self):
         cleaned_data = self.cleaned_data
-        print(self.user)
+        print(self.internal_user)
 
         # check to make sure a duplicate entry is not being submitted
         git = cleaned_data['galaxyinstancetracking']
         try:
             GalaxyUser.objects.get(galaxyinstancetracking=git,
-                                   user=self.user)
+                                   internal_user=self.internal_user)
         except GalaxyUser.DoesNotExist:
             pass
         else:
             raise ValidationError('The current user ({}) is already assigned to the chosen Galaxy'
-                                  ' instance ({}) '.format(self.user, git.name))
+                                  ' instance ({}) '.format(self.internal_user, git.name))
 
         # check galaxy instance can be accessed and is useable
         api_key = cleaned_data['api_key']
@@ -100,7 +96,11 @@ class GalaxyUserForm(forms.ModelForm):
 
     class Meta:
         model = GalaxyUser
-        fields = ['api_key', 'galaxyinstancetracking', 'email']
+        fields = ('api_key', 'galaxyinstancetracking', 'email', 'public')
+        widgets = {
+            'galaxyinstancetracking': autocomplete.ModelSelect2(url='galaxyinstancetracking-autocomplete'),
+        }
+
 
 
 
@@ -135,6 +135,9 @@ class WorkflowForm(forms.ModelForm):
     class Meta:
         model = Workflow
         fields = ( 'workflowjson', 'name', 'description', 'galaxyinstancetracking')
+        widgets = {
+            'galaxyinstancetracking': autocomplete.ModelSelect2(url='galaxyinstancetracking-autocomplete'),
+        }
 
     def clean(self):
         cleaned_data = super(WorkflowForm, self).clean()
@@ -145,7 +148,7 @@ class WorkflowForm(forms.ModelForm):
         # Check galaxy is accessible and works
         user = User.objects.get(username=self.user)
         git = cleaned_data['galaxyinstancetracking']
-        api_key = GalaxyUser.objects.get(user=user, galaxyinstancetracking=git).api_key
+        api_key = GalaxyUser.objects.get(internal_user=user, galaxyinstancetracking=git).api_key
         galaxy_url = git.url
         check_galaxy(api_key, galaxy_url)
 
@@ -183,6 +186,9 @@ class FilesToGalaxyDataLibraryParamForm(forms.ModelForm):
     class Meta:
         model = FilesToGalaxyDataLibraryParam
         fields = ('folder_name', 'galaxyinstancetracking', 'link2files', 'local_path', 'ftp')
+        widgets = {
+            'galaxyinstancetracking': autocomplete.ModelSelect2(url='galaxyinstancetracking-autocomplete'),
+        }
 
     def clean(self):
         cleaned_data = super(FilesToGalaxyDataLibraryParamForm, self).clean()
@@ -217,6 +223,9 @@ class GenericFilesToGalaxyHistoryParamForm(forms.ModelForm):
     class Meta:
         model =  GenericFilesToGalaxyHistoryParam
         fields = ('history_name', 'galaxyinstancetracking')
+        widgets = {
+            'galaxyinstancetracking': autocomplete.ModelSelect2(url='galaxyinstancetracking-autocomplete'),
+        }
 
 
 class DeleteGalaxyHistoryForm(forms.Form):

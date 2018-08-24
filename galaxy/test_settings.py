@@ -5,6 +5,8 @@ INSTALLED_APPS = [
     'gfiles',
     'galaxy',
 
+    'dal_select2',
+    'dal',
     'django_tables2',
     'django_tables2_column_shifter',
     'django_filters',

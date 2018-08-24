@@ -19,7 +19,7 @@ from galaxy.utils.upload_to_galaxy import get_time_stamp, get_gi_gu
 def workflow_sync(user):
 
     # get all instances for that user
-    gits = GalaxyInstanceTracking.objects.filter(galaxyuser__user=user)
+    gits = GalaxyInstanceTracking.objects.filter(galaxyuser__internal_user=user)
     dj_wfs = Workflow.objects.all()
     # loop through instances
     all_wfs = []
@@ -58,7 +58,7 @@ def random_string(n):
 
 def get_workflow_status(user):
     # go through every galaxy instance
-    gits = GalaxyInstanceTracking.objects.filter(galaxyuser__user=user)
+    gits = GalaxyInstanceTracking.objects.filter(galaxyuser__internal_user=user)
     dj_wfs = Workflow.objects.all()
     # loop through instances
     status = []
@@ -241,7 +241,7 @@ def get_galaxy_workflow_inputs(w, user):
     git = w.galaxyinstancetracking
     wf_name = w.name
 
-    api_key = GalaxyUser.objects.get(user=user, galaxyinstancetracking=git).api_key
+    api_key = GalaxyUser.objects.get(internal_user=user, galaxyinstancetracking=git).api_key
     galaxy_url = git.url
 
     gi = GalaxyInstance(galaxy_url, key=api_key)

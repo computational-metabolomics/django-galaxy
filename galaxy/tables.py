@@ -11,7 +11,7 @@ import os
 
 
 class GalaxyInstanceTrackingTable(ColumnShiftTable):
-    user_count = tables.LinkColumn('add_galaxy_instance', verbose_name='User count')
+    user_count = tables.LinkColumn('list_galaxy_user', verbose_name='User count')
     update = tables.LinkColumn('update_galaxy_instance', text='update', verbose_name='Update', args=[A('id')])
     delete = tables.LinkColumn('delete_galaxy_instance', text='delete', verbose_name='Delete', args=[A('id')])
 
@@ -23,7 +23,7 @@ class GalaxyInstanceTrackingTable(ColumnShiftTable):
         }
 
         fields = (
-        'id', 'url', 'name', 'ftp_host', 'ftp_port', 'galaxy_root_path')
+        'id', 'owner', 'url', 'name', 'ftp_host', 'ftp_port', 'galaxy_root_path', 'public')
 
         template = 'django_tables2/bootstrap.html'
 
@@ -40,7 +40,7 @@ class GalaxyUserTable(ColumnShiftTable):
             ' class ': 'paleblue',
         }
         template = 'django_tables2/bootstrap.html'
-        fields = ['user', 'email', 'galaxyinstancetracking']
+        fields = ('internal_user', 'email', 'galaxyinstancetracking', 'public')
 
 
 class ProgressColumn(tables.Column):

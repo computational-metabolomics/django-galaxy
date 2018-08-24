@@ -137,6 +137,8 @@ def transfer_filelist_from_ftp(gi, filelist, history_name):
 
 
 def copy_history_files_to_datalib(history_files, lc, lib_id, folder_id):
+    for  f in history_files:
+        print(f)
     return [lc.copy_from_dataset(lib_id, f['id'], folder_id) for f in history_files]
 
 
@@ -206,7 +208,7 @@ def f2h_action(gfile_ids, f2h, galaxy_pass):
         print('filelist empty')
         return []
 
-    gu = GalaxyUser.objects.get(user=user, galaxyinstancetracking=git)
+    gu = GalaxyUser.objects.get(internal_user=user, galaxyinstancetracking=git)
     api_key = gu.api_key
     galaxy_url = git.url
     gi = GalaxyInstance(galaxy_url, key=api_key)

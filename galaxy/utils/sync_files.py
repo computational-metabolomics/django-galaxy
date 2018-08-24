@@ -9,7 +9,7 @@ from galaxy.utils.galaxy_utils import get_gi_gu
 def sync_galaxy_files(user):
     print('check')
     # go through all the galaxylink files associated with the galaxy_instance_id
-    gits = GalaxyInstanceTracking.objects.filter(galaxyuser__user=user)
+    gits = GalaxyInstanceTracking.objects.filter(galaxyuser__internal_user=user)
 
     # loop through galaxy instance
     for git in gits:

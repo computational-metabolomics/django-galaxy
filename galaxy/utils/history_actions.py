@@ -2,14 +2,24 @@ from __future__ import print_function
 import time
 import random
 import string
-import urllib
 import os
+
+import sys
+
+if sys.version_info[0] >= 3:
+    from urllib.request import urlretrieve
+else:
+    # Not Python 3 - today, it is most likely to be Python 2
+    # But note that this might need an update when Python 4
+    # might be around one day
+    from urllib import urlretrieve
 
 
 from datetime import datetime
-
+import requests
 from bioblend.galaxy.histories import HistoryClient
 from django.core.files import File
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 from galaxy.models import GalaxyInstanceTracking, History
 from galaxy.utils.upload_to_galaxy import get_gi_gu
@@ -22,7 +32,7 @@ def random_string(n):
 
 def get_history_status(user):
     # go through every galaxy instance
-    gits = GalaxyInstanceTracking.objects.filter(galaxyuser__user=user)
+    gits = GalaxyInstanceTracking.objects.filter(galaxyuser__internal_user=user)
 
     # loop through instances
     status = []
@@ -142,8 +152,12 @@ def history_data_save_form(user, history_internal_id, galaxy_dataset_id, history
         history_data_obj = save_as_symlink(history_d['abs_pth'], history_d['name'], history_data_obj)
 
     else:
-        data_pth = urllib.urlretrieve(history_d['full_download_url'])[0]
-        history_data_obj.data_file.save(history_d['name'], File(open(data_pth)))
+        # data_pth = urlretrieve(history_d['full_download_url'])[0]
+        response = requests.get(history_d['full_download_url'])
+        data_file = SimpleUploadedFile(history_d['name'], response.content)
+        history_data_obj.data_file = data_file
+
+        # history_data_obj.data_file.save(history_d['name'], SimpleUploadedFile(data_pth))
         history_data_obj.save()
 
 
@@ -163,13 +177,15 @@ def init_history_data_save_form(user, history_internal_id, galaxy_dataset_id):
 
     history_d['full_download_url'] = h.galaxyinstancetracking.url + history_d['download_url']
 
+
+    # need to update now that we do not store the Galaxy root path in settings
     history_d['abs_pth'] = ''
 
-    if hasattr(settings, 'GALAXY_ROOT_PATH'):
-        data_pth = history_d['file_name'].replace('/export/', '')
-        fullpth = os.path.join(settings.GALAXY_ROOT_PATH,  data_pth)
-        if os.path.exists(fullpth):
-            history_d['abs_pth'] = fullpth
+    # data_pth = history_d['file_name'].replace('/export/', '')
+    # fullpth = os.path.join(settings.GALAXY_ROOT_PATH,  data_pth)
+
+    # if os.path.exists(fullpth):
+    #     history_d['abs_pth'] = fullpth
 
     return history_d
 

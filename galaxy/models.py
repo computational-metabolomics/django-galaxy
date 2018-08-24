@@ -34,6 +34,13 @@ class GalaxyInstanceTracking(models.Model):
                                                                                          'either via a symlink or directly, the '
                                                                                          'path should be included here')
 
+    public = models.BooleanField(default=True, help_text='When set to true, other users will able to see and use '
+                                                         'this Galaxy instance')
+
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, help_text='The user who created the link with this'
+                                                                        ' Galaxy instance',
+                             null=True, blank=True)
+
     def __str__(self):  # __unicode__ on Python 2
         return self.name
 
@@ -62,7 +69,10 @@ class GalaxyUser(models.Model):
 
     '''
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    internal_user = models.ForeignKey(User, on_delete=models.CASCADE, help_text='The internal user for '
+                                                                                'the Django (MOGI) web application. '
+                                                                                'i.e. the User from this web application'
+                                                                                ' that is linking to the Galaxy user')
     email = models.EmailField(null=False, help_text='the email used for the Galaxy account')
 
     # API currently not hashed, tried to follow the salting procedure (https://djangosnippets.org/snippets/1330/)
@@ -70,12 +80,13 @@ class GalaxyUser(models.Model):
     # we are doing. Also.... if you are worried about security you probably not going to use Galaxy anyway......
     api_key = models.CharField(max_length=200, null=False)
     galaxyinstancetracking = models.ForeignKey(GalaxyInstanceTracking, on_delete=models.CASCADE)
+    public = models.BooleanField(default=False, help_text='By default no other users can your Galaxy user connections')
 
     def __str__(self):  # __unicode__ on Python 2
         return 'g-user for dj-user {}'.format(self.user)
 
     class Meta:
-        unique_together = (("user", "galaxyinstancetracking"),)
+        unique_together = (("internal_user", "galaxyinstancetracking"),)
 
 
 class Workflow(models.Model):

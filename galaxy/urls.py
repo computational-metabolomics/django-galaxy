@@ -8,6 +8,9 @@ urlpatterns = [
     url(r'add_galaxy_instance/$', views.GalaxyInstanceCreateView.as_view(), name='add_galaxy_instance'),
     url(r'update_galaxy_instance/(?P<pk>\d+)/$', views.GalaxyInstanceTrackingUpdateView.as_view(), name='update_galaxy_instance'),
     url(r'delete_galaxy_instance/(?P<pk>\d+)/$', views.GalaxyInstanceTrackingDeleteView.as_view(), name='delete_galaxy_instance'),
+    url(r'^galaxyinstancetracking-autocomplete/$',
+        views.GalaxyInstanceTrackingAutocomplete.as_view(),
+        name='galaxyinstancetracking-autocomplete'),
 
     # galaxy users
     url(r'add_galaxy_user/$', views.GalaxyUserCreateView.as_view(), name='add_galaxy_user'),
@@ -21,7 +24,7 @@ urlpatterns = [
     url(r'files_to_galaxy_datalib/$', views.FilesToGalaxyDataLib.as_view(), name='files_to_galaxy_datalib'),
     url(r'files_to_galaxy_history/$', views.GenericFilesToGalaxyHistory.as_view(), name='files_to_galaxy_history'),
     url(r'runworkflow/(?P<wid>\d+)$', views.WorkflowRunView.as_view(), name='runworkflow'),
-    url(r'^success/$', views.success, name='success'),
+    url(r'^galaxy_success/$', views.success, name='galaxy_success'),
     url(r'^checkbox_selected/$', views.checkbox_selected, name='checkbox_selected'),
     url(r'^workflow_status/$', views.WorkflowStatus.as_view(), name='workflow_status'),
     url(r'^workflow_status/_export=csv$', views.WorkflowStatus.as_view(), name='workflow_status_csv'),

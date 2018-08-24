@@ -6,7 +6,7 @@ from galaxy.models import GalaxyUser
 
 
 def get_gi_gu(user, git):
-    gu = GalaxyUser.objects.get(user=user, galaxyinstancetracking=git)
+    gu = GalaxyUser.objects.get(internal_user=user, galaxyinstancetracking=git)
 
     galaxy_url = git.url
     gi = GalaxyInstance(galaxy_url, key=gu.api_key)

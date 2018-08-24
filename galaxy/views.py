@@ -19,6 +19,8 @@ from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.db.models import Q
 from django.urls import reverse_lazy
+from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib import messages
 
 # django external apps
 from django_tables2 import RequestConfig
@@ -26,6 +28,7 @@ import django_tables2 as tables
 from django_tables2.views import SingleTableMixin, MultiTableMixin
 from django_filters.views import FilterView
 from django_tables2.export.views import ExportMixin
+from dal import autocomplete
 
 # django custom user external apps
 from gfiles.models import GenericFile
@@ -84,7 +87,7 @@ from galaxy.utils.history_actions import (
 
 
 
-class GalaxyInstanceCreateView(LoginRequiredMixin, CreateView):
+class GalaxyInstanceCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):
     '''
     Create a Galaxy instance to track in django. Note that the Galaxy needs to be accessible at the point of
     initialisation.
@@ -99,19 +102,75 @@ class GalaxyInstanceCreateView(LoginRequiredMixin, CreateView):
     model = GalaxyInstanceTracking
     success_url = reverse_lazy('galaxy_summary')
     form_class = GalaxyInstanceTrackingForm
+    success_message = 'Galaxy instance tracked'
+
+    def form_valid(self, form):
+        # The user is automatically added to the model based on whoever is logged in at the time
+        gi = form.save(commit=False)
+        gi.owner = self.request.user
+        gi.save()
+        return super(GalaxyInstanceCreateView, self).form_valid(form)
 
 
-class GalaxyInstanceTrackingUpdateView(LoginRequiredMixin, UpdateView):
+class GalaxyInstanceTrackingUpdateView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     model = GalaxyInstanceTracking
     success_url = reverse_lazy('galaxy_summary')
     form_class = GalaxyInstanceTrackingForm
+    success_message = 'Galaxy instance tracking updated'
+
+    def user_passes_test(self, request):
+        if request.user.is_superuser:
+            return True
+        elif request.user.is_authenticated():
+            return self.get_object().owner == request.user
+        else:
+            return False
+
+    def dispatch(self, request, *args, **kwargs):
+        if not self.user_passes_test(request):
+            messages.error(request, 'User has insufficient privileges to update Galaxy instance tracking')
+            return redirect('galaxy_summary')
+        return super(GalaxyInstanceTrackingUpdateView, self).dispatch(request, *args, **kwargs)
 
 
-class GalaxyInstanceTrackingDeleteView(DeleteView):
+
+class GalaxyInstanceTrackingDeleteView(LoginRequiredMixin, DeleteView):
     model = GalaxyInstanceTracking
-    success_url = reverse_lazy('list_ontologyterm')
+    success_url = reverse_lazy('galaxy_summary')
     template_name = 'galaxy/confirm_delete.html'
 
+    def user_passes_test(self, request):
+        if request.user.is_superuser:
+            return True
+        elif request.user.is_authenticated():
+            return self.get_object().owner == request.user
+        else:
+            return False
+
+    def dispatch(self, request, *args, **kwargs):
+        if not self.user_passes_test(request):
+            messages.error(request, 'User has insufficient privileges to delete Galaxy instance tracking')
+            return redirect('galaxy_summary')
+        messages.error(request, 'Galaxy instance tracking deleted')
+        return super(GalaxyInstanceTrackingDeleteView, self).dispatch(request, *args, **kwargs)
+
+
+class GalaxyInstanceTrackingAutocomplete(autocomplete.Select2QuerySetView):
+    model_class = GalaxyInstanceTracking
+
+    def get_queryset(self):
+        # Don't forget to filter out results depending on the visitor !
+        if not self.request.user.is_authenticated():
+            return self.model_class.objects.none()
+        if self.request.user.is_superuser:
+            qs = self.model_class.objects.all()
+        else:
+            qs = self.model_class.objects.filter(Q(public=True) | Q(owner=self.request.user))
+
+        if self.q:
+            qs = qs.filter(name__istartswith=self.q)
+
+        return qs
 
 
 class GalaxySummaryView(LoginRequiredMixin, SingleTableMixin, ListView):
@@ -120,9 +179,17 @@ class GalaxySummaryView(LoginRequiredMixin, SingleTableMixin, ListView):
     table_class = GalaxyInstanceTrackingTable
     model = GalaxyInstanceTracking
 
+    def get_queryset(self):
+        if not self.request.user.is_authenticated():
+            return self.model.objects.none()
+        if self.request.user.is_superuser:
+            return self.model.objects.all()
+        else:
+            return self.model.objects.filter(Q(public=True) | Q(owner=self.request.user))
 
 
-class GalaxyUserCreateView(LoginRequiredMixin, CreateView):
+
+class GalaxyUserCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):
     '''
     Register a Galaxy user to a Galaxy instance that we have tracked.
 
@@ -136,8 +203,9 @@ class GalaxyUserCreateView(LoginRequiredMixin, CreateView):
 
     '''
     model = GalaxyUser
-    success_url = '/galaxy/success'
+    success_url = reverse_lazy('list_galaxy_user')
     form_class = GalaxyUserForm
+    success_message = 'Galaxy User added'
 
     def get_form_kwargs(self):
         # Get the user form as a kwarg argument
@@ -148,25 +216,60 @@ class GalaxyUserCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         # The user is automatically added to the model based on whoever is logged in at the time
         gu = form.save(commit=False)
-        gu.user = self.request.user
+        gu.internal_user = self.request.user
         gu.save()
         return super(GalaxyUserCreateView, self).form_valid(form)
 
-    def get_initial(self):
-        # show the most recent galaxy instance as default value
-        return {'galaxyinstancetracking':GalaxyInstanceTracking.objects.last()}
+    # def get_initial(self):
+    #     # show the most recent galaxy instance as default value
+    #     return {'galaxyinstancetracking':GalaxyInstanceTracking.objects.last()}
 
 
-class GalaxyUserUpdateView(LoginRequiredMixin, UpdateView):
+
+
+
+class GalaxyUserUpdateView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     model = GalaxyUser
     success_url = reverse_lazy('list_galaxy_user')
     form_class = GalaxyUserForm
+    success_message = 'Galaxy user has been updated'
+
+    def user_passes_test(self, request):
+        if request.user.is_superuser:
+            return True
+        elif request.user.is_authenticated():
+            return self.get_object().internal_user == request.user
+        else:
+            return False
+
+    def dispatch(self, request, *args, **kwargs):
+        if not self.user_passes_test(request):
+            messages.error(request, 'User has insufficient privileges to update Galaxy user')
+            return redirect('galaxy_summary')
+
+        return super(GalaxyUserUpdateView, self).dispatch(request, *args, **kwargs)
 
 
 class GalaxyUserDeleteView(DeleteView):
     model = GalaxyUser
     success_url = reverse_lazy('list_galaxy_user')
     template_name = 'galaxy/confirm_delete.html'
+
+    def user_passes_test(self, request):
+        if request.user.is_superuser:
+            return True
+        elif request.user.is_authenticated():
+            return self.get_object().internal_user == request.user
+        else:
+            return False
+
+    def dispatch(self, request, *args, **kwargs):
+        if not self.user_passes_test(request):
+            messages.error(request, 'User has insufficient privileges to delete Galaxy user')
+            return redirect('galaxy_summary')
+
+        messages.error(request, 'User has insufficient privileges to delete')
+        return super(GalaxyUserDeleteView, self).dispatch(request, *args, **kwargs)
 
 
 
@@ -176,6 +279,13 @@ class GalaxyUserListView(LoginRequiredMixin, SingleTableMixin, ListView):
     table_class = GalaxyUserTable
     model = GalaxyUser
 
+    def get_queryset(self):
+        if not self.request.user.is_authenticated():
+            return self.model.objects.none()
+        if self.request.user.is_superuser:
+            return self.model.objects.all()
+        else:
+            return self.model.objects.filter(Q(public=True) | Q(internal_user=self.request.user))
 
 
 class GalaxySync(LoginRequiredMixin, View):
@@ -205,6 +315,7 @@ class WorkflowListView(LoginRequiredMixin, SingleTableMixin, FilterView):
     Workflows can also be synced here as well
     '''
     table_class = WorkflowTable
+    redirect_to = 'workflow_summary'
     model = Workflow
     template_name = 'galaxy/workflow_summary.html'
     filterset_class = WorkflowFilter
@@ -212,7 +323,7 @@ class WorkflowListView(LoginRequiredMixin, SingleTableMixin, FilterView):
     def post(self, request, *args, **kwargs):
         workflow_sync(request.user)
         # redirects to show the current available workflows
-        return redirect('workflow_summary')
+        return redirect(self.redirect_to)
 
 
 class TableFileSelectMixin:
@@ -382,24 +493,27 @@ class WorkflowRunView(LoginRequiredMixin, View):
             data_input_steps.append(di.step)
             data_input_types.append(di.datatype)
             print('name', di.name)
-            mtch = re.match('.*\((.*)\).*', di.name)
-
-            if mtch:
-                filetypes = mtch.group(1)
-                filetype_l = filetypes.split(',')
-                print('FILETYPE LIST', filetype_l)
-
-                filetype_l = [f.strip() for f in filetype_l]
-                # https://stackoverflow.com/questions/4824759/django-query-using-contains-each-value-in-a-list
-                query = reduce(operator.or_, (Q(original_filename__icontains=item) for item in filetype_l))
-                # will output something like this
-                # <Q: (OR: ('original_filename__icontains', '.txt'), ('original_filename__icontains', '.tsv'),
-                # ('original_filename__icontains', '.tabular'))>
-                print(query)
-                gfqs_f = gfqs.filter(query)
-                print(gfqs_f)
-            else:
+            if not di.name:
                 gfqs_f = gfqs
+            else:
+                mtch = re.match('.*\((.*)\).*', di.name)
+
+                if mtch:
+                    filetypes = mtch.group(1)
+                    filetype_l = filetypes.split(',')
+                    print('FILETYPE LIST', filetype_l)
+
+                    filetype_l = [f.strip() for f in filetype_l]
+                    # https://stackoverflow.com/questions/4824759/django-query-using-contains-each-value-in-a-list
+                    query = reduce(operator.or_, (Q(original_filename__icontains=item) for item in filetype_l))
+                    # will output something like this
+                    # <Q: (OR: ('original_filename__icontains', '.txt'), ('original_filename__icontains', '.tsv'),
+                    # ('original_filename__icontains', '.tabular'))>
+                    print(query)
+                    gfqs_f = gfqs.filter(query)
+                    print(gfqs_f)
+                else:
+                    gfqs_f = gfqs
 
             # Create an invidivual filter for each table
             f = self.filter_class(request.GET, queryset=gfqs_f, prefix=i)
