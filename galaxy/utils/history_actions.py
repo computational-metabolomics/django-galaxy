@@ -177,15 +177,13 @@ def init_history_data_save_form(user, history_internal_id, galaxy_dataset_id):
 
     history_d['full_download_url'] = h.galaxyinstancetracking.url + history_d['download_url']
 
-
-    # need to update now that we do not store the Galaxy root path in settings
     history_d['abs_pth'] = ''
 
-    # data_pth = history_d['file_name'].replace('/export/', '')
-    # fullpth = os.path.join(settings.GALAXY_ROOT_PATH,  data_pth)
+    data_pth = history_d['file_name'].replace('/export/', '')
+    fullpth = os.path.join(h.galaxyinstancetracking.galaxy_root_path, data_pth)
 
-    # if os.path.exists(fullpth):
-    #     history_d['abs_pth'] = fullpth
+    if os.path.exists(fullpth):
+         history_d['abs_pth'] = fullpth
 
     return history_d
 
