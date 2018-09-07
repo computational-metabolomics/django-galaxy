@@ -528,7 +528,7 @@ class WorkflowRunView(LoginRequiredMixin, View):
 
             # create a new table with the custom column
             table = self.table_class(f.qs, prefix=i, extra_columns=(('check{}'.format(i), check),),
-                               attrs={'name':i, 'id':i, 'class': 'paleblue'})
+                               attrs={'name':i, 'id':i, 'class': "table table-bordered table-striped table-condensed table-hover"})
 
             # load the table into the requestconfig
             rc.configure(table)

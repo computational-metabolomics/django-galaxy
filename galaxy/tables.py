@@ -18,14 +18,12 @@ class GalaxyInstanceTrackingTable(ColumnShiftTable):
     class Meta:
         model = GalaxyInstanceTracking
 
-        attrs = {
-            ' class ': 'paleblue',
-        }
+        attrs = {"class": "table table-bordered table-striped table-condensed table-hover", }
 
         fields = (
         'id', 'owner', 'url', 'name', 'ftp_host', 'ftp_port', 'galaxy_root_path', 'public')
 
-        template = 'django_tables2/bootstrap.html'
+
 
 
 class GalaxyUserTable(ColumnShiftTable):
@@ -36,10 +34,7 @@ class GalaxyUserTable(ColumnShiftTable):
 
     class Meta:
         model = GalaxyUser
-        attrs = {
-            ' class ': 'paleblue',
-        }
-        template = 'django_tables2/bootstrap.html'
+        attrs = {"class": "table table-bordered table-striped table-condensed table-hover", }
         fields = ('internal_user', 'email', 'galaxyinstancetracking', 'public')
 
 
@@ -73,7 +68,8 @@ class WorkflowStatusTable(ColumnShiftTable):
     #                                        )
 
     class Meta:
-        attrs = {'class': 'paleblue', 'id':'status_table'}
+        attrs = {"class": "table table-bordered table-striped table-condensed table-hover", 'id':'status_table'}
+
         template = 'django_tables2/bootstrap.html'
 
 
@@ -115,8 +111,8 @@ class HistoryDataTable(ColumnShiftTable):
 
 
     class Meta:
-        attrs = {'class': 'paleblue'}
-        template = 'django_tables2/bootstrap.html'
+        attrs = {"class": "table table-bordered table-striped table-condensed table-hover", }
+
 
     def get_column_default_show(self):
         self.column_default_show = ['galaxy_instance', 'name', 'data_type', 'create_time', 'download_url']
@@ -154,13 +150,11 @@ class HistoryTable(ColumnShiftTable):
     class Meta:
         model = History
 
-        attrs = {
-            ' class ': 'paleblue',
-        }
+        attrs = {"class": "table table-bordered table-striped table-condensed table-hover", }
         # running_tasks_details = tables.Column()
         order_by = ('-update_time',)
 
-        template = 'django_tables2/bootstrap.html'
+
 
 
 
@@ -175,5 +169,4 @@ class WorkflowTable(ColumnShiftTable):
     class Meta:
 
         model = Workflow
-        attrs = {'class': 'paleblue'}
-        template = 'django_tables2/bootsrap.html'
+        attrs = {"class": "table table-bordered table-striped table-condensed table-hover", }
