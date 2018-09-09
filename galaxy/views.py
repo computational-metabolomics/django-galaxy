@@ -83,7 +83,7 @@ from galaxy.utils.history_actions import (
     history_data_save_form
 )
 
-
+TABLE_CLASS = "mogi table-bordered table-striped table-condensed table-hover"
 
 
 
@@ -528,7 +528,7 @@ class WorkflowRunView(LoginRequiredMixin, View):
 
             # create a new table with the custom column
             table = self.table_class(f.qs, prefix=i, extra_columns=(('check{}'.format(i), check),),
-                               attrs={'name':i, 'id':i, 'class': "table table-bordered table-striped table-condensed table-hover"})
+                               attrs={'name':i, 'id':i, 'class': TABLE_CLASS})
 
             # load the table into the requestconfig
             rc.configure(table)

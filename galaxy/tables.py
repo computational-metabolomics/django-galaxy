@@ -6,9 +6,7 @@ from django.utils.safestring import mark_safe
 from django_tables2_column_shifter.tables import ColumnShiftTable
 from django_tables2.utils import A
 
-
-import os
-
+TABLE_CLASS = "mogi table-bordered table-striped table-condensed table-hover"
 
 class GalaxyInstanceTrackingTable(ColumnShiftTable):
     user_count = tables.LinkColumn('list_galaxy_user', verbose_name='User count')
@@ -17,9 +15,7 @@ class GalaxyInstanceTrackingTable(ColumnShiftTable):
 
     class Meta:
         model = GalaxyInstanceTracking
-
-        attrs = {"class": "table table-bordered table-striped table-condensed table-hover", }
-
+        attrs = {"class": TABLE_CLASS}
         fields = (
         'id', 'owner', 'url', 'name', 'ftp_host', 'ftp_port', 'galaxy_root_path', 'public')
 
@@ -34,7 +30,7 @@ class GalaxyUserTable(ColumnShiftTable):
 
     class Meta:
         model = GalaxyUser
-        attrs = {"class": "table table-bordered table-striped table-condensed table-hover", }
+        attrs = {"class": TABLE_CLASS}
         fields = ('internal_user', 'email', 'galaxyinstancetracking', 'public')
 
 
@@ -68,7 +64,7 @@ class WorkflowStatusTable(ColumnShiftTable):
     #                                        )
 
     class Meta:
-        attrs = {"class": "table table-bordered table-striped table-condensed table-hover", 'id':'status_table'}
+        attrs = {"class": TABLE_CLASS, 'id': 'status_table'}
 
         template = 'django_tables2/bootstrap.html'
 
@@ -111,7 +107,7 @@ class HistoryDataTable(ColumnShiftTable):
 
 
     class Meta:
-        attrs = {"class": "table table-bordered table-striped table-condensed table-hover", }
+        attrs = {"class": TABLE_CLASS}
 
 
     def get_column_default_show(self):
@@ -149,8 +145,8 @@ class HistoryTable(ColumnShiftTable):
 
     class Meta:
         model = History
+        attrs = {"class": TABLE_CLASS}
 
-        attrs = {"class": "table table-bordered table-striped table-condensed table-hover", }
         # running_tasks_details = tables.Column()
         order_by = ('-update_time',)
 
@@ -169,4 +165,4 @@ class WorkflowTable(ColumnShiftTable):
     class Meta:
 
         model = Workflow
-        attrs = {"class": "table table-bordered table-striped table-condensed table-hover", }
+        attrs = {"class": TABLE_CLASS}
