@@ -121,7 +121,7 @@ class GalaxyInstanceTrackingUpdateView(SuccessMessageMixin, LoginRequiredMixin, 
     def user_passes_test(self, request):
         if request.user.is_superuser:
             return True
-        elif request.user.is_authenticated():
+        elif request.user.is_authenticated:
             return self.get_object().owner == request.user
         else:
             return False
@@ -142,7 +142,7 @@ class GalaxyInstanceTrackingDeleteView(LoginRequiredMixin, DeleteView):
     def user_passes_test(self, request):
         if request.user.is_superuser:
             return True
-        elif request.user.is_authenticated():
+        elif request.user.is_authenticated:
             return self.get_object().owner == request.user
         else:
             return False
@@ -160,7 +160,7 @@ class GalaxyInstanceTrackingAutocomplete(autocomplete.Select2QuerySetView):
 
     def get_queryset(self):
         # Don't forget to filter out results depending on the visitor !
-        if not self.request.user.is_authenticated():
+        if not self.request.user.is_authenticated:
             return self.model_class.objects.none()
         if self.request.user.is_superuser:
             qs = self.model_class.objects.all()
@@ -180,7 +180,7 @@ class GalaxySummaryView(LoginRequiredMixin, SingleTableMixin, ListView):
     model = GalaxyInstanceTracking
 
     def get_queryset(self):
-        if not self.request.user.is_authenticated():
+        if not self.request.user.is_authenticated:
             return self.model.objects.none()
         if self.request.user.is_superuser:
             return self.model.objects.all()
@@ -237,7 +237,7 @@ class GalaxyUserUpdateView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     def user_passes_test(self, request):
         if request.user.is_superuser:
             return True
-        elif request.user.is_authenticated():
+        elif request.user.is_authenticated:
             return self.get_object().internal_user == request.user
         else:
             return False
@@ -258,7 +258,7 @@ class GalaxyUserDeleteView(DeleteView):
     def user_passes_test(self, request):
         if request.user.is_superuser:
             return True
-        elif request.user.is_authenticated():
+        elif request.user.is_authenticated:
             return self.get_object().internal_user == request.user
         else:
             return False
@@ -280,7 +280,7 @@ class GalaxyUserListView(LoginRequiredMixin, SingleTableMixin, ListView):
     model = GalaxyUser
 
     def get_queryset(self):
-        if not self.request.user.is_authenticated():
+        if not self.request.user.is_authenticated:
             return self.model.objects.none()
         if self.request.user.is_superuser:
             return self.model.objects.all()
