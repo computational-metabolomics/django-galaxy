@@ -115,6 +115,7 @@ class Workflow(models.Model):
 
         data_inputs = []
         for step, details, in steps.items():
+            print(step, details)
             dtype = details['type']
             name = details['label']
             if dtype == 'data_input' or dtype == 'data_collection_input':

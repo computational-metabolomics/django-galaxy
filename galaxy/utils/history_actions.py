@@ -44,7 +44,7 @@ def get_history_status(user):
 
         # loop through and create a list of dictionaries for our django table
         for hist in hists:
-            print(hist)
+
             sd = {}
             # add useful info
             history_info = hc.show_history(hist['id'])
@@ -147,7 +147,7 @@ def history_data_save_form(user, history_internal_id, galaxy_dataset_id, history
     history_d = init_history_data_save_form(user, history_internal_id, galaxy_dataset_id)
 
     # If we can access the file from Galaxy directly we won't download
-    print('history d', history_d)
+
     if history_d['abs_pth']:
         history_data_obj = save_as_symlink(history_d['abs_pth'], history_d['name'], history_data_obj)
 
@@ -165,7 +165,7 @@ def history_data_save_form(user, history_internal_id, galaxy_dataset_id, history
 
 
 def init_history_data_save_form(user, history_internal_id, galaxy_dataset_id):
-    print(user)
+
     h = History.objects.get(pk=history_internal_id)
 
     gi, gu = get_gi_gu(user, h.galaxyinstancetracking)
