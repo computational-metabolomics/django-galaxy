@@ -3,8 +3,10 @@ import time
 import random
 import string
 import os
-
 import sys
+
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
 
 if sys.version_info[0] >= 3:
     from urllib.request import urlretrieve
@@ -30,7 +32,7 @@ def random_string(n):
     # https://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits-in-python
     return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(n))
 
-def get_history_status(user):
+def get_history_status(user, hist_id=None):
     # go through every galaxy instance
     gits = GalaxyInstanceTracking.objects.filter(galaxyuser__internal_user=user)
 
@@ -47,6 +49,9 @@ def get_history_status(user):
 
             sd = {}
             # add useful info
+            if hist_id and hist['id'] != hist_id:
+                continue
+                
             history_info = hc.show_history(hist['id'])
 
             # add status info
@@ -149,15 +154,20 @@ def history_data_save_form(user, history_internal_id, galaxy_dataset_id, history
     # If we can access the file from Galaxy directly we won't download
 
     if history_d['abs_pth']:
-        history_data_obj = save_as_symlink(history_d['abs_pth'], history_d['name'], history_data_obj)
+        history_data_obj = save_as_symlink(history_d['abs_pth'],
+                                           history_d['name'], history_data_obj)
 
     else:
-        # data_pth = urlretrieve(history_d['full_download_url'])[0]
-        response = requests.get(history_d['full_download_url'])
-        data_file = SimpleUploadedFile(history_d['name'], response.content)
-        history_data_obj.data_file = data_file
+        print(history_d['full_download_url'])
+        print(history_d['name'])
+        data_retr = urlretrieve(history_d['full_download_url'])[0]
+        print(
+        
+        history_data_obj.data_file.save(history_d['name'], File(open(data_retr, 'rb')))
 
-        # history_data_obj.data_file.save(history_d['name'], SimpleUploadedFile(data_pth))
+        #response = requests.get(history_d['full_download_url'], verify=False)
+        #data_file = SimpleUploadedFile(history_d['name'], response.content)
+
         history_data_obj.save()
 
 
@@ -182,6 +192,7 @@ def init_history_data_save_form(user, history_internal_id, galaxy_dataset_id):
     data_pth = history_d['file_name'].replace('/export/', '')
     fullpth = os.path.join(h.galaxyinstancetracking.galaxy_root_path, data_pth)
 
+    print(fullpth)
     if os.path.exists(fullpth):
          history_d['abs_pth'] = fullpth
 
