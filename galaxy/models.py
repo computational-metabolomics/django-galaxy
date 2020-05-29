@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function, unicode_literals
 from django.db import models
-from django.contrib.auth.models import User
 from django.conf import settings
 from datetime import datetime
 import os
@@ -37,7 +36,7 @@ class GalaxyInstanceTracking(models.Model):
     public = models.BooleanField(default=True, help_text='When set to true, other users will able to see and use '
                                                          'this Galaxy instance')
 
-    owner = models.ForeignKey(User, on_delete=models.SET_NULL, help_text='The user who created the link with this'
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, help_text='The user who created the link with this'
                                                                         ' Galaxy instance',
                              null=True, blank=True)
 
@@ -69,7 +68,7 @@ class GalaxyUser(models.Model):
 
     '''
 
-    internal_user = models.ForeignKey(User, on_delete=models.CASCADE, help_text='The internal user for '
+    internal_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, help_text='The internal user for '
                                                                                 'the Django (MOGI) web application. '
                                                                                 'i.e. the User from this web application'
                                                                                 ' that is linking to the Galaxy user')
@@ -95,7 +94,7 @@ class Workflow(models.Model):
     '''
     workflowjson = models.TextField(max_length=5000, blank=False, null=False)
     name = models.CharField(max_length=200, null=False)
-    added_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    added_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     description = models.CharField(max_length=200)
     galaxy_id = models.CharField(max_length=200)
     latest_workflow_uuid = models.CharField(max_length=200)
@@ -116,6 +115,7 @@ class Workflow(models.Model):
 
         data_inputs = []
         for step, details, in steps.items():
+            print(step, details)
             dtype = details['type']
             name = details['label']
             if dtype == 'data_input' or dtype == 'data_collection_input':
@@ -168,7 +168,7 @@ class WorkflowInput(models.Model):
 
 class WorkflowRun(models.Model):
     rundate = models.DateTimeField(auto_now_add=True)
-    ran_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    ran_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE)
     library = models.BooleanField(help_text='Use files from data library')
     history_name = models.CharField(max_length=200, null=False)
@@ -195,7 +195,7 @@ class GalaxyFileLink(models.Model):
 
 
 class FilesToGalaxyDataLibraryParam(models.Model):
-    added_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    added_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     folder_name = models.CharField(max_length=200, null=True, blank=True)
     galaxyinstancetracking = models.ForeignKey(GalaxyInstanceTracking, on_delete=models.CASCADE)
     link2files = models.BooleanField(default=False)
@@ -211,7 +211,7 @@ class FilesToGalaxyDataLibraryParam(models.Model):
 
 
 class GenericFilesToGalaxyHistoryParam(models.Model):
-    added_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    added_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     history_name = models.CharField(max_length=200, null=False)
     galaxyinstancetracking = models.ForeignKey(GalaxyInstanceTracking, on_delete=models.CASCADE)
 

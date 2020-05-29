@@ -487,7 +487,7 @@ class WorkflowRunView(LoginRequiredMixin, View):
         # loop through all the data_inputs from the associated workflow
         for i in range(0, len(data_inputs)):
 
-            # create a few lists of Input Datasetvarious useful information for the template
+            # create a few lists of Input Dataset various useful information for the template
             di = data_inputs[i]
             data_input_names.append(di.name)
             data_input_steps.append(di.step)

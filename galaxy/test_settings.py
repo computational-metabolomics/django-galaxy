@@ -24,7 +24,7 @@ INSTALLED_APPS = [
 DEBUG = True
 
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -37,6 +37,7 @@ MIDDLEWARE_CLASSES = [
 
 ]
 
+AUTH_USER_MODEL = 'gfiles.User'
 
 
 DATABASES = {

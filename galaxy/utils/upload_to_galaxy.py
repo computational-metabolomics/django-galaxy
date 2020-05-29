@@ -2,6 +2,7 @@ from __future__ import print_function
 import os
 from ftplib import FTP
 from past.builtins import xrange
+from pathlib import Path
 
 from bioblend.galaxy import GalaxyInstance
 from bioblend.galaxy.libraries import LibraryClient
@@ -76,22 +77,25 @@ def create_folders(lc, libid, base_f_id, folders):
     return create_folders(lc=lc, libid=libid, base_f_id=gf[0]['id'], folders=folders)
 
 
-def add_filelist_datalib(filelist, f2dl_param, lc, gu, gi, galaxy_pass, lib_id, folder_id, history_ftp_name=''):
+def add_filelist_datalib(filelist, f2dl_param, lc, gu, gi,
+                         galaxy_pass, lib_id, folder_id, history_ftp_name=''):
     # add a filelist to datalib, either with ftp method or through directory method
     if f2dl_param.ftp:
-        history_files = add_filelist_to_history_via_ftp(filelist, gu, gi, galaxy_pass, f2dl_param, history_ftp_name)
+        history_files = add_filelist_to_history_via_ftp(filelist, gu, gi,
+                                                        galaxy_pass, f2dl_param, history_ftp_name)
         data_lib_files = copy_history_files_to_datalib(history_files, lc, lib_id, folder_id)
     else:
 
         data_lib_files = add_files_2_galaxy_datalib_dir(lc=lc,
-                                                    lib_id=lib_id,
-                                                    filelist=filelist,
-                                                    folder_id=folder_id,
-                                                    link2files=f2dl_param.link2files)
+                                                        lib_id=lib_id,
+                                                        filelist=filelist,
+                                                        folder_id=folder_id,
+                                                        link2files=f2dl_param.link2files)
     return data_lib_files
 
 
-def add_filelist_to_history_via_ftp(filelist, gu, gi, galaxy_pass, galaxy_isa_upload_param, full_assay_name):
+def add_filelist_to_history_via_ftp(filelist, gu, gi, galaxy_pass,
+                                    galaxy_isa_upload_param, full_assay_name):
     git = galaxy_isa_upload_param.galaxyinstancetracking
     # get the study name of the group and create folder
 
@@ -137,25 +141,28 @@ def transfer_filelist_from_ftp(gi, filelist, history_name):
 
 
 def copy_history_files_to_datalib(history_files, lc, lib_id, folder_id):
-    for  f in history_files:
-        print(f)
+    
     return [lc.copy_from_dataset(lib_id, f['id'], folder_id) for f in history_files]
 
 
 
-def add_files_2_galaxy_datalib_dir(lc, lib_id, folder_id, filelist, local_path=False, link2files=True):
+def add_files_2_galaxy_datalib_dir(lc, lib_id, folder_id, filelist,
+                                   local_path=False, link2files=True):
     all_uploaded_files = []
-
+    filelist = [os.path.abspath(Path(f).resolve()) for f in filelist]
 
     if local_path:
-        for file in filelist:
-            all_uploaded_files.append(lc.upload_file_from_local_path(lib_id, file,
-                                                            folder_id=folder_id, file_type='auto'))
+        for f in filelist:
+            f = Path(f).resolve()
+            all_uploaded_files.append(lc.upload_file_from_local_path(lib_id,
+                                                                     f,
+                                                                     folder_id=folder_id,
+                                                                     file_type='auto'))
         return all_uploaded_files
     else:
-        filechunks = get_filechunks(filelist)
+        filechunks = get_filechunks_dtypes(filelist)
         for filechunk in filechunks:
-            print(filechunk)
+        
             if isinstance(filechunk, list):
                 filelist_str = '\n'.join(filechunk)
             else:
@@ -165,33 +172,50 @@ def add_files_2_galaxy_datalib_dir(lc, lib_id, folder_id, filelist, local_path=F
                 link_data_only = 'link_to_files'
             else:
                 link_data_only = None
-            print(lib_id, filelist_str, folder_id,'auto',link_data_only)
-            uploaded_files = lc.upload_from_galaxy_filesystem(lib_id, filelist_str,
+
+            # Check for file types (only need to check one file as if
+            # mzml or raw they should be the same file type in each
+            # chunk
+            if '.mzml' in filechunk[0].lower():
+                file_type = 'mzml'
+            elif '.raw' in filechunk[0].lower():
+                file_type = 'thermo.raw'
+            else:
+                file_type = 'auto'
+
+            print(lib_id, filelist_str, folder_id,link_data_only, file_type)
+
+            uploaded_files = lc.upload_from_galaxy_filesystem(lib_id,
+                                                              filelist_str,
                                                               folder_id=folder_id,
-                                                              file_type='auto', link_data_only=link_data_only)
+                                                              file_type=file_type,
+                                                              link_data_only=link_data_only,
+                                                              tag_using_filenames=False)
 
             all_uploaded_files.extend(uploaded_files)
 
         return all_uploaded_files
 
 
-def link_files_in_galaxy(uploaded_files, selected_files, git, library=True):
+def link_files_in_galaxy(uploaded_files, filedetails, git, galaxy_library=True):
 
-    if isinstance(selected_files, QuerySet):
-        selected_ids = [f.id for f in selected_files]
+    if isinstance(filedetails[0], dict):
+        selected_ids = {f['original_filename']: f['id'] for f in filedetails}
     else:
-        selected_ids = [f['id'] for f in selected_files]
+        selected_ids = {f.original_filename: f.id for f in filedetails}
 
     gfls = []
     for i in range(0, len(uploaded_files)):
+        print(uploaded_files[i])
         if len(gfls) % 10 == 0:
             print(gfls)
             GalaxyFileLink.objects.bulk_create(gfls)
             gfls = []
-        gfls.append(GalaxyFileLink(galaxy_library=library,
-                           galaxy_id=uploaded_files[i]['id'],
-                           genericfile_id=selected_ids[i],
-                           galaxyinstancetracking=git))
+            
+        gfls.append(GalaxyFileLink(galaxy_library=galaxy_library,
+                                   galaxy_id=uploaded_files[i]['id'],
+                                   genericfile_id=selected_ids[uploaded_files[i]['name']],
+                                   galaxyinstancetracking=git))
 
     print('CHECK', gfls)
     GalaxyFileLink.objects.bulk_create(gfls)
@@ -222,7 +246,27 @@ def f2h_action(gfile_ids, f2h, galaxy_pass):
     link_files_in_galaxy(uploaded_files, selected_files, git, library=False)
 
 
+def get_filechunks_dtypes(filelist):
+    raw_files = []
+    mzml_files = []
+    other_files = []
+    
+    for f in filelist:
+        if '.mzml' in f.lower():
+            mzml_files.append(f)   
+        elif '.raw' in f.lower():
+            raw_files.append(f)
+        else:
+            other_files.append(f)
+    all = []
+
+    all.extend(get_filechunks(mzml_files))
+    all.extend(get_filechunks(raw_files))
+    all.extend(get_filechunks(other_files))
+    return all
+
 def get_filechunks(filelist):
+    
     if len(filelist) >= 5:
         return [filelist[x:x + 5] for x in xrange(0, len(filelist), 5)]
     else:
