@@ -161,16 +161,11 @@ def history_data_save_form(user, history_internal_id, galaxy_dataset_id, history
         print(history_d['full_download_url'])
         print(history_d['name'])
         data_retr = urlretrieve(history_d['full_download_url'])[0]
-        print(
-        
         history_data_obj.data_file.save(history_d['name'], File(open(data_retr, 'rb')))
-
         #response = requests.get(history_d['full_download_url'], verify=False)
         #data_file = SimpleUploadedFile(history_d['name'], response.content)
-
         history_data_obj.save()
-
-
+        
     return history_data_obj
 
 
