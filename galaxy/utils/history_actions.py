@@ -156,7 +156,6 @@ def history_data_save_form(user, history_internal_id, galaxy_dataset_id, history
     if history_d['abs_pth']:
         history_data_obj = save_as_symlink(history_d['abs_pth'],
                                            history_d['name'], history_data_obj)
-
     else:
         print(history_d['full_download_url'])
         print(history_d['name'])
@@ -179,18 +178,17 @@ def init_history_data_save_form(user, history_internal_id, galaxy_dataset_id):
     hc = HistoryClient(gi)
 
     history_d = hc.show_dataset(history_id=h.galaxy_id, dataset_id=galaxy_dataset_id)
-
+    
     history_d['full_download_url'] = h.galaxyinstancetracking.url + history_d['download_url']
 
     history_d['abs_pth'] = ''
 
     data_pth = history_d['file_name'].replace('/export/', '')
     fullpth = os.path.join(h.galaxyinstancetracking.galaxy_root_path, data_pth)
-
-    print(fullpth)
+    
     if os.path.exists(fullpth):
          history_d['abs_pth'] = fullpth
-
+    print('ABS_PTH {}'.format(history_d['abs_pth']))
     return history_d
 
 

@@ -249,7 +249,7 @@ class HistoryData(GenericFile):
     # history_data_file = models.FileField(upload_to=history_data_file_store, blank=False, null=False)
 
     def __str__(self):  # __unicode__ on Python 2
-        return self.name
+        return self.original_name
 
 
 
