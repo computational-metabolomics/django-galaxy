@@ -32,7 +32,7 @@ def workflow_sync(user):
         for wf in wfs:
             wfd = wc.show_workflow(wf['id'])
             ### check if id of the workflow already in galaxy
-            wjson = wc.export_workflow_json(wf['id'])
+            wjson = wc.export_workflow_dict(wf['id'])
 
             dj_wf = dj_wfs.filter(galaxy_id=wfd['id'])
             if dj_wf:
