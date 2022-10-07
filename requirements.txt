@@ -1,6 +1,8 @@
-django>=1.11.15
-
+django>=2.2.*,<4.*
+django-filter>=21.*
 django-rest-framework
-django-gfiles
-
+django-autocomplete-light
 bioblend
+
+
+-e git+https://github.com/computational-metabolomics/django-gfiles#egg=django-gfiles

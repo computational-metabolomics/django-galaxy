@@ -2,24 +2,33 @@ import os
 SECRET_KEY = 'fake-key'
 INSTALLED_APPS = [
 
-    'gfiles',
     'galaxy',
+    'gfiles',
 
-    'dal_select2',
     'dal',
+    'dal_select2',
     'django_tables2',
-    'django_tables2_column_shifter',
+    'rest_framework',
+    'django_celery_results',
     'django_filters',
     'bootstrap3',
     'django_sb_admin',
+    'django_tables2_column_shifter',
 
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
 
+    'allauth.socialaccount.providers.google',
+
+    'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
 ]
 DEBUG = True
 
@@ -30,12 +39,12 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
 ]
+
 
 AUTH_USER_MODEL = 'gfiles.User'
 

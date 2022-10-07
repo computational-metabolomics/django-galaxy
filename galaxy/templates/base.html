@@ -1,6 +1,5 @@
 {% extends "django_sb_admin/base.html" %}
 {% load static %}
-{% load staticfiles %}
 
 {% block sb_admin_css %}
     <link href="{% static "css/sb-admin.css"%}" rel="stylesheet">
@@ -40,10 +39,10 @@
                                 <li><a href="#"><i class="fa fa-fw fa-gear"></i> Settings</a></li>
 
                                 <li class="divider"></li>
-                                <li><a href="{% url 'logout' %}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+                                <li><a href="{% url 'account_logout' %}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
                             {% else %}
-                                <li><a href="{% url 'register' %}"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-                                <li><a href="{% url 'login' %}"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                                <li><a href="{% url 'account_signup' %}"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+                                <li><a href="{% url 'account_login' %}"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
                             {% endif %}
                     </ul>
                 </li>

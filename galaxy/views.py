@@ -13,7 +13,7 @@ if sys.version_info > (3, 0):
 
 # standard django
 from django.shortcuts import render
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, AccessMixin
 from django.views.generic import CreateView, View, ListView, DeleteView, UpdateView
 from django.http import JsonResponse
 from django.shortcuts import redirect
@@ -85,245 +85,22 @@ from galaxy.utils.history_actions import (
 
 TABLE_CLASS = "mogi table-bordered table-striped table-condensed table-hover"
 
+##########################################
+# MIXINS
+##########################################
+class GalaxyOperatorMixin(SuccessMessageMixin, LoginRequiredMixin, PermissionRequiredMixin, AccessMixin):
+    # Provides mixins for messaging, login, permissions and permission handling (accessmixin)
+    # Setup as default for InvestigationCreate.
+    redirect_string = 'galaxy_summary'
+    task_string = ''
+    permission_required = ''
+    success_message = ''
+    permission_denied_message = 'Permission Denied'
+    success_url = reverse_lazy('ilist')
 
-
-class GalaxyInstanceCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):
-    '''
-    Create a Galaxy instance to track in django. Note that the Galaxy needs to be accessible at the point of
-    initialisation.
-
-    If file transfer is required to Galaxy that is not located on the same server as the Django server then the
-    associated FTP host & post details need to be added as well, see `galaxy docs`_
-
-    User login required
-
-    .. _galaxy docs: https://galaxyproject.org/ftp-upload/
-    '''
-    model = GalaxyInstanceTracking
-    success_url = reverse_lazy('galaxy_summary')
-    form_class = GalaxyInstanceTrackingForm
-    success_message = 'Galaxy instance tracked'
-
-    def form_valid(self, form):
-        # The user is automatically added to the model based on whoever is logged in at the time
-        gi = form.save(commit=False)
-        gi.owner = self.request.user
-        gi.save()
-        return super(GalaxyInstanceCreateView, self).form_valid(form)
-
-
-class GalaxyInstanceTrackingUpdateView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
-    model = GalaxyInstanceTracking
-    success_url = reverse_lazy('galaxy_summary')
-    form_class = GalaxyInstanceTrackingForm
-    success_message = 'Galaxy instance tracking updated'
-
-    def user_passes_test(self, request):
-        if request.user.is_superuser:
-            return True
-        elif request.user.is_authenticated:
-            return self.get_object().owner == request.user
-        else:
-            return False
-
-    def dispatch(self, request, *args, **kwargs):
-        if not self.user_passes_test(request):
-            messages.error(request, 'User has insufficient privileges to update Galaxy instance tracking')
-            return redirect('galaxy_summary')
-        return super(GalaxyInstanceTrackingUpdateView, self).dispatch(request, *args, **kwargs)
-
-
-
-class GalaxyInstanceTrackingDeleteView(LoginRequiredMixin, DeleteView):
-    model = GalaxyInstanceTracking
-    success_url = reverse_lazy('galaxy_summary')
-    template_name = 'galaxy/confirm_delete.html'
-
-    def user_passes_test(self, request):
-        if request.user.is_superuser:
-            return True
-        elif request.user.is_authenticated:
-            return self.get_object().owner == request.user
-        else:
-            return False
-
-    def dispatch(self, request, *args, **kwargs):
-        if not self.user_passes_test(request):
-            messages.error(request, 'User has insufficient privileges to delete Galaxy instance tracking')
-            return redirect('galaxy_summary')
-        messages.error(request, 'Galaxy instance tracking deleted')
-        return super(GalaxyInstanceTrackingDeleteView, self).dispatch(request, *args, **kwargs)
-
-
-class GalaxyInstanceTrackingAutocomplete(autocomplete.Select2QuerySetView):
-    model_class = GalaxyInstanceTracking
-
-    def get_queryset(self):
-        # Don't forget to filter out results depending on the visitor !
-        if not self.request.user.is_authenticated:
-            return self.model_class.objects.none()
-        if self.request.user.is_superuser:
-            qs = self.model_class.objects.all()
-        else:
-            qs = self.model_class.objects.filter(Q(public=True) | Q(owner=self.request.user))
-
-        if self.q:
-            qs = qs.filter(name__istartswith=self.q)
-
-        return qs
-
-
-class GalaxySummaryView(LoginRequiredMixin, SingleTableMixin, ListView):
-    # initial = {'key': 'value'}
-    template_name = 'galaxy/galaxy_summary.html'
-    table_class = GalaxyInstanceTrackingTable
-    model = GalaxyInstanceTracking
-
-    def get_queryset(self):
-        if not self.request.user.is_authenticated:
-            return self.model.objects.none()
-        if self.request.user.is_superuser:
-            return self.model.objects.all()
-        else:
-            return self.model.objects.filter(Q(public=True) | Q(owner=self.request.user))
-
-
-
-class GalaxyUserCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):
-    '''
-    Register a Galaxy user to a Galaxy instance that we have tracked.
-
-    A django user can be linked to many Galaxy instances and each Galaxy User HAS to be linked to Galaxy instance
-
-    django-user [1 --- *] galaxy-users
-
-    galaxy-user [* --- 1] galaxy-instances
-
-    However, a django user can't be linked to multiple of the same galaxy instances
-
-    '''
-    model = GalaxyUser
-    success_url = reverse_lazy('list_galaxy_user')
-    form_class = GalaxyUserForm
-    success_message = 'Galaxy User added'
-
-    def get_form_kwargs(self):
-        # Get the user form as a kwarg argument
-        kwargs = super(CreateView, self).get_form_kwargs()
-        kwargs['user'] = self.request.user
-        return kwargs
-
-    def form_valid(self, form):
-        # The user is automatically added to the model based on whoever is logged in at the time
-        gu = form.save(commit=False)
-        gu.internal_user = self.request.user
-        gu.save()
-        return super(GalaxyUserCreateView, self).form_valid(form)
-
-    # def get_initial(self):
-    #     # show the most recent galaxy instance as default value
-    #     return {'galaxyinstancetracking':GalaxyInstanceTracking.objects.last()}
-
-
-
-
-
-class GalaxyUserUpdateView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
-    model = GalaxyUser
-    success_url = reverse_lazy('list_galaxy_user')
-    form_class = GalaxyUserForm
-    success_message = 'Galaxy user has been updated'
-
-    def user_passes_test(self, request):
-        if request.user.is_superuser:
-            return True
-        elif request.user.is_authenticated:
-            return self.get_object().internal_user == request.user
-        else:
-            return False
-
-    def dispatch(self, request, *args, **kwargs):
-        if not self.user_passes_test(request):
-            messages.error(request, 'User has insufficient privileges to update Galaxy user')
-            return redirect('galaxy_summary')
-
-        return super(GalaxyUserUpdateView, self).dispatch(request, *args, **kwargs)
-
-
-class GalaxyUserDeleteView(DeleteView):
-    model = GalaxyUser
-    success_url = reverse_lazy('list_galaxy_user')
-    template_name = 'galaxy/confirm_delete.html'
-
-    def user_passes_test(self, request):
-        if request.user.is_superuser:
-            return True
-        elif request.user.is_authenticated:
-            return self.get_object().internal_user == request.user
-        else:
-            return False
-
-    def dispatch(self, request, *args, **kwargs):
-        if not self.user_passes_test(request):
-            messages.error(request, 'User has insufficient privileges to delete Galaxy user')
-            return redirect('galaxy_summary')
-
-        messages.error(request, 'User has insufficient privileges to delete')
-        return super(GalaxyUserDeleteView, self).dispatch(request, *args, **kwargs)
-
-
-
-class GalaxyUserListView(LoginRequiredMixin, SingleTableMixin, ListView):
-    # initial = {'key': 'value'}
-    template_name = 'galaxy/galaxy_user_list.html'
-    table_class = GalaxyUserTable
-    model = GalaxyUser
-
-    def get_queryset(self):
-        if not self.request.user.is_authenticated:
-            return self.model.objects.none()
-        if self.request.user.is_superuser:
-            return self.model.objects.all()
-        else:
-            return self.model.objects.filter(Q(public=True) | Q(internal_user=self.request.user))
-
-
-class GalaxySync(LoginRequiredMixin, View):
-    '''
-    Sync workflows from available galaxy instances for the current user.
-
-    This will add any workflows to the django database that have not already been added. And will update
-    any that have been updated on the galaxy instance.
-
-    todo: It might be worth changing this view to a more general GalaxySync option. That syncs workflows & files
-    '''
-    def get(self, request, *args, **kwargs):
-        return render(request, 'galaxy/galaxy_sync.html')
-
-    def post(self, request, *args, **kwargs):
-        workflow_sync(request.user)
-        sync_galaxy_files(request.user)
-        get_history_status(request.user)
-        # redirects to show the current available workflows
-        return redirect('workflow_summary')
-
-
-class WorkflowListView(LoginRequiredMixin, SingleTableMixin, FilterView):
-    '''
-    View and initiate a run for all registered workflows.
-
-    Workflows can also be synced here as well
-    '''
-    table_class = WorkflowTable
-    redirect_to = 'workflow_summary'
-    model = Workflow
-    template_name = 'galaxy/workflow_summary.html'
-    filterset_class = WorkflowFilter
-
-    def post(self, request, *args, **kwargs):
-        workflow_sync(request.user)
-        # redirects to show the current available workflows
-        return redirect(self.redirect_to)
+    def handle_no_permission(self):
+        messages.error(self.request, 'User has insufficient privileges to {}'.format(self.task_string))
+        return redirect(self.redirect_string)
 
 
 class TableFileSelectMixin:
@@ -352,8 +129,6 @@ class TableFileSelectMixin:
         context = self.get_context_data(filter=self.filterset, object_list=self.object_list,  form=form)
         context.update(self.initial_context)
 
-
-
         return context
 
     def post(self, request, *args, **kwargs):
@@ -378,8 +153,272 @@ class TableFileSelectMixin:
         # first save the form and the user who posted
         return render(request, 'gfiles/submitted.html')
 
+##########################################
+# Views
+##########################################
+class GalaxyInstanceCreateView(GalaxyOperatorMixin, CreateView):
+    '''
+    Create a Galaxy instance to track in django. Note that the Galaxy needs to be accessible at the point of
+    initialisation.
 
-class FilesToGalaxyDataLib(LoginRequiredMixin, TableFileSelectMixin, GFileListView):
+    If file transfer is required to Galaxy that is not located on the same server as the Django server then the
+    associated FTP host & post details need to be added as well, see `galaxy docs`_
+
+    User login required
+
+    .. _galaxy docs: https://galaxyproject.org/ftp-upload/
+    '''
+    model = GalaxyInstanceTracking
+    success_url = reverse_lazy('galaxy_summary')
+    form_class = GalaxyInstanceTrackingForm
+    permission_denied_message = 'Permission Denied'
+    task_string = 'register galaxy instance'
+    permission_required = 'galaxy.add_galaxyinstancetracking'
+    success_message = 'Galaxy instance register'
+
+    def form_valid(self, form):
+        # The user is automatically added to the model based on whoever is logged in at the time
+        gi = form.save(commit=False)
+        gi.owner = self.request.user
+        gi.save()
+        return super(GalaxyInstanceCreateView, self).form_valid(form)
+
+
+class GalaxyInstanceTrackingUpdateView(GalaxyOperatorMixin, UpdateView):
+    model = GalaxyInstanceTracking
+    success_url = reverse_lazy('galaxy_summary')
+    form_class = GalaxyInstanceTrackingForm
+
+    task_string = 'update galaxy instance'
+    permission_required = 'galaxy.change_galaxyinstancetracking'
+    success_message = 'Galaxy instance updated'
+
+    def user_passes_test(self, request):
+        if request.user.is_superuser:
+            return True
+        elif request.user.is_authenticated:
+            return self.get_object().owner == request.user
+        else:
+            return False
+
+    def dispatch(self, request, *args, **kwargs):
+        if not self.user_passes_test(request):
+            messages.error(request, 'User has insufficient privileges to update this Galaxy instance')
+            return redirect('galaxy_summary')
+        # messages.error(request, 'Galaxy instance tracking deleted')
+        return super(GalaxyInstanceTrackingUpdateView, self).dispatch(request, *args, **kwargs)
+
+
+class GalaxyInstanceTrackingDeleteView(GalaxyOperatorMixin, DeleteView):
+    model = GalaxyInstanceTracking
+    success_url = reverse_lazy('galaxy_summary')
+    template_name = 'galaxy/confirm_delete.html'
+    task_string = 'delete galaxy instance'
+    permission_required = 'galaxy.delete_galaxyinstancetracking'
+    success_message = 'Galaxy instance deleted'
+
+    def user_passes_test(self, request):
+        if request.user.is_superuser:
+            return True
+        elif request.user.is_authenticated:
+            return self.get_object().owner == request.user
+        else:
+            return False
+
+    def dispatch(self, request, *args, **kwargs):
+        if not self.user_passes_test(request):
+            messages.error(request, 'User has insufficient privileges to delete this Galaxy instance tracking')
+            return redirect('galaxy_summary')
+        # messages.error(request, 'Galaxy instance tracking deleted')
+        return super(GalaxyInstanceTrackingDeleteView, self).dispatch(request, *args, **kwargs)
+
+
+class GalaxyInstanceTrackingAutocomplete(autocomplete.Select2QuerySetView):
+    model_class = GalaxyInstanceTracking
+
+    def get_queryset(self):
+        # Don't forget to filter out results depending on the visitor !
+        if not self.request.user.is_authenticated:
+            return self.model_class.objects.none()
+        if self.request.user.is_superuser:
+            qs = self.model_class.objects.all()
+        else:
+            qs = self.model_class.objects.filter(Q(public=True) | Q(owner=self.request.user))
+
+        if self.q:
+            qs = qs.filter(name__istartswith=self.q)
+
+        return qs
+
+
+class GalaxySummaryView(SingleTableMixin, ListView):
+    # initial = {'key': 'value'}
+    template_name = 'galaxy/galaxy_summary.html'
+    table_class = GalaxyInstanceTrackingTable
+    model = GalaxyInstanceTracking
+
+    def get_queryset(self):
+
+        if not self.request.user.is_authenticated:
+            return self.model.objects.filter(public=True)
+        if self.request.user.is_superuser:
+            return self.model.objects.all()
+        else:
+            return self.model.objects.filter(Q(public=True) | Q(owner=self.request.user))
+
+
+
+class GalaxyUserCreateView(GalaxyOperatorMixin, CreateView):
+    '''
+    Register a Galaxy user to a Galaxy instance that we have tracked.
+
+    A django user can be linked to many Galaxy instances and each Galaxy User HAS to be linked to Galaxy instance
+
+    django-user [1 --- *] galaxy-users
+
+    galaxy-user [* --- 1] galaxy-instances
+
+    However, a django user can't be linked to multiple of the same galaxy instances
+
+    '''
+    model = GalaxyUser
+    success_url = reverse_lazy('list_galaxy_user')
+    form_class = GalaxyUserForm
+    success_message = 'Galaxy user added'
+    task_string = 'add galaxy user'
+    permission_required = 'galaxy.add_galaxyuser'
+
+    def get_form_kwargs(self):
+        # Get the user form as a kwarg argument
+        kwargs = super(CreateView, self).get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        # The user is automatically added to the model based on whoever is logged in at the time
+        gu = form.save(commit=False)
+        gu.internal_user = self.request.user
+        gu.save()
+        return super(GalaxyUserCreateView, self).form_valid(form)
+
+    # def get_initial(self):
+    #     # show the most recent galaxy instance as default value
+    #     return {'galaxyinstancetracking':GalaxyInstanceTracking.objects.last()}
+
+
+class GalaxyUserUpdateView(GalaxyOperatorMixin, UpdateView):
+    model = GalaxyUser
+    success_url = reverse_lazy('list_galaxy_user')
+    form_class = GalaxyUserForm
+    success_message = 'Galaxy user has been updated'
+    task_string = 'update galaxy user'
+    permission_required = 'galaxy.change_galaxyuser'
+
+    def user_passes_test(self, request):
+        if request.user.is_superuser:
+            return True
+        elif request.user.is_authenticated:
+            return self.get_object().internal_user == request.user
+        else:
+            return False
+
+    def dispatch(self, request, *args, **kwargs):
+        if not self.user_passes_test(request):
+            messages.error(request, 'User has insufficient privileges to update this Galaxy user')
+            return redirect('galaxy_summary')
+
+        return super(GalaxyUserUpdateView, self).dispatch(request, *args, **kwargs)
+
+
+class GalaxyUserDeleteView(GalaxyOperatorMixin, DeleteView):
+    model = GalaxyUser
+    success_url = reverse_lazy('list_galaxy_user')
+    template_name = 'galaxy/confirm_delete.html'
+
+    success_message = 'Galaxy user has been deleted'
+    task_string = 'delete galaxy user'
+    permission_required = 'galaxy.delete_galaxyuser'
+
+    def user_passes_test(self, request):
+        if request.user.is_superuser:
+            return True
+        elif request.user.is_authenticated:
+            return self.get_object().internal_user == request.user
+        else:
+            return False
+
+    def dispatch(self, request, *args, **kwargs):
+        if not self.user_passes_test(request):
+            messages.error(request, 'User has insufficient privileges to delete this Galaxy user')
+            return redirect('galaxy_summary')
+
+        return super(GalaxyUserDeleteView, self).dispatch(request, *args, **kwargs)
+
+
+
+class GalaxyUserListView(GalaxyOperatorMixin, ListView):
+    # initial = {'key': 'value'}
+    template_name = 'galaxy/galaxy_user_list.html'
+    table_class = GalaxyUserTable
+    model = GalaxyUser
+
+    task_string = 'list galaxy users'
+    permission_required = 'galaxy.list_galaxyuser'
+
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return self.model.objects.filter(public=True)
+        if self.request.user.is_superuser:
+            return self.model.objects.all()
+        else:
+            return self.model.objects.filter(Q(public=True) | Q(internal_user=self.request.user))
+
+
+class GalaxySync(GalaxyOperatorMixin, View):
+    '''
+    Sync workflows from available galaxy instances for the current user.
+
+    This will add any workflows to the django database that have not already been added. And will update
+    any that have been updated on the galaxy instance.
+
+    todo: It might be worth changing this view to a more general GalaxySync option. That syncs workflows & files
+    '''
+    task_string = 'Sync Galaxy workflows'
+    permission_required = 'galaxy.list_workflow'
+
+    def get(self, request, *args, **kwargs):
+        return render(request, 'galaxy/galaxy_sync.html')
+
+    def post(self, request, *args, **kwargs):
+        workflow_sync(request.user)
+        sync_galaxy_files(request.user)
+        get_history_status(request.user)
+        # redirects to show the current available workflows
+        return redirect('workflow_summary')
+
+
+class WorkflowListView(GalaxyOperatorMixin, SingleTableMixin, FilterView):
+    '''
+    View and initiate a run for all registered workflows.
+
+    Workflows can also be synced here as well
+    '''
+    table_class = WorkflowTable
+    redirect_to = 'workflow_summary'
+    model = Workflow
+    template_name = 'galaxy/workflow_summary.html'
+    filterset_class = WorkflowFilter
+
+    task_string = 'list galaxy workflows'
+    permission_required = 'galaxy.list_workflow'
+
+    def post(self, request, *args, **kwargs):
+        workflow_sync(request.user)
+        # redirects to show the current available workflows
+        return redirect(self.redirect_to)
+
+
+class FilesToGalaxyDataLib(GalaxyOperatorMixin, TableFileSelectMixin, GFileListView):
     '''
     Select Files to be added to Galaxy data Library
 
@@ -388,6 +427,9 @@ class FilesToGalaxyDataLib(LoginRequiredMixin, TableFileSelectMixin, GFileListVi
     template_name = 'galaxy/files_to_galaxy.html'
     form_class = FilesToGalaxyDataLibraryParamForm
     initial_context = {'library': True, 'django_url': '/galaxy/files_to_galaxy_datalib/'}
+
+    task_string = 'Files to Galaxy data lib'
+    permission_required = 'galaxy.add_galaxyfilelink'
 
     def save_form_param(self, request, form):
         user = request.user
@@ -412,7 +454,9 @@ class FilesToGalaxyDataLib(LoginRequiredMixin, TableFileSelectMixin, GFileListVi
         return render(request, 'gfiles/submitted.html')
 
 
-class GenericFilesToGalaxyHistory(LoginRequiredMixin, TableFileSelectMixin, GFileListView):
+class GenericFilesToGalaxyHistory(GalaxyOperatorMixin, TableFileSelectMixin, GFileListView):
+    task_string = 'Generic files to Galaxy history'
+    permission_required = 'galaxy.add_galaxyfilelink'
 
     template_name = 'galaxy/files_to_galaxy.html'
 
@@ -432,10 +476,14 @@ class GenericFilesToGalaxyHistory(LoginRequiredMixin, TableFileSelectMixin, GFil
 
 
 
-class WorkflowRunView(LoginRequiredMixin, View):
+class WorkflowRunView(GalaxyOperatorMixin, View):
     '''
     Run a registered workflow
     '''
+    task_string = 'run workflows'
+    permission_required = 'galaxy.list_workflow'
+    redirect_string = 'galaxy_summary'
+
     success_msg = "Run started"
     success_url = '/galaxy/success'
     template_name = 'galaxy/workflow_run.html'
@@ -444,11 +492,13 @@ class WorkflowRunView(LoginRequiredMixin, View):
     form_class = WorkflowRunForm
     redirect_to = 'history_status'
 
+    def handle_no_permission(self):
+        messages.error(self.request, 'User has insufficient privileges to {}'.format(self.task_string))
+        return redirect(self.redirect_string)
 
     def update_workflow_inputs(self, l):
         # update the worklow inputs before submission (to be used with classes that inherit this class
         return l
-
 
     def get_queryset(self):
         return Workflow.objects.get(pk=self.kwargs['wid'])
@@ -577,13 +627,20 @@ class WorkflowRunView(LoginRequiredMixin, View):
         return render(request, self.template_name, {'form': form, 'list': l, 'wid':self.kwargs['wid']})
 
 
-class WorkflowStatus(LoginRequiredMixin, View):
+class WorkflowStatus(GalaxyOperatorMixin, View):
     '''
     View available Galaxy. If any new workflows are added to a Galaxy instance the user should sync first before
     they can be seen in the table.
     '''
+    task_string = 'workflow status'
+    permission_required = 'galaxy.list_workflow'
+    redirect_string = 'galaxy_summary'
 
     # template_name = 'galaxy/status.html'
+
+    def handle_no_permission(self):
+        messages.error(self.request, 'User has insufficient privileges to {}'.format(self.task_string))
+        return redirect(self.redirect_string)
 
     def get(self, request, *args, **kwargs):
         data = get_workflow_status(request.user)
@@ -597,8 +654,17 @@ class WorkflowStatus(LoginRequiredMixin, View):
         # redirects to show the current available workflows
         return redirect('workflow_summary')
 
-class HistoryDataBioBlendListView(LoginRequiredMixin, View):
 
+class HistoryDataBioBlendListView(GalaxyOperatorMixin, View):
+    task_string = 'history datat (bioblend)'
+    permission_required = 'galaxy.list_historydata'
+    redirect_string = 'galaxy_summary'
+
+    # template_name = 'galaxy/status.html'
+
+    def handle_no_permission(self):
+        messages.error(self.request, 'User has insufficient privileges to {}'.format(self.task_string))
+        return redirect(self.redirect_string)
 
     def get(self, request, *args, **kwargs):
         data = get_history_data(self.kwargs['pk'], request.user)
@@ -609,11 +675,25 @@ class HistoryDataBioBlendListView(LoginRequiredMixin, View):
         # return render(request, 'galaxy/history_status.html', {'table': table})
 
 
-class HistoryDataCreateView(LoginRequiredMixin, CreateView):
+class HistoryDataCreateView(GalaxyOperatorMixin, CreateView):
+    task_string = 'create history data'
+    permission_required = 'galaxy.add_historydata'
+    redirect_string = 'galaxy_summary'
 
     model = HistoryData
     success_url = '/galaxy/success'
     form_class = HistoryDataForm
+
+    def handle_no_permission(self):
+        messages.error(self.request, 'User has insufficient privileges to {}'.format(self.task_string))
+        return redirect(self.redirect_string)
+
+    def user_passes_test(self, request):
+        if request.user.is_superuser:
+            return True
+        else:
+            return False
+
 
     def get_initial(self):
 
@@ -645,7 +725,7 @@ class HistoryDataCreateView(LoginRequiredMixin, CreateView):
 
 
 
-class HistoryListView(LoginRequiredMixin, TableFileSelectMixin,SingleTableMixin, ExportMixin, FilterView):
+class HistoryListView(GalaxyOperatorMixin, TableFileSelectMixin, SingleTableMixin, ExportMixin, FilterView):
     '''
     View and initiate a run for all registered workflows.
 
@@ -662,6 +742,13 @@ class HistoryListView(LoginRequiredMixin, TableFileSelectMixin,SingleTableMixin,
                        'django_update_url': '/galaxy/history_status_update/'}
 
 
+    task_string = 'list galaxy histories'
+    permission_required = 'galaxy.list_history'
+    redirect_string = 'galaxy_summary'
+
+    def handle_no_permission(self):
+        messages.error(self.request, 'User has insufficient privileges to {}'.format(self.task_string))
+        return redirect(self.redirect_string)
 
     def get(self, request, *args, **kwargs):
         # we have to overide the standard get to add some extra information to the context
@@ -693,11 +780,26 @@ def workflow_status_update(request):
 
 
 
-class WorkflowCreateView(LoginRequiredMixin, CreateView):
+class WorkflowCreateView(GalaxyOperatorMixin, CreateView):
 
     model = Workflow
     form_class = WorkflowForm
     success_url = '/galaxy/success'
+
+    task_string = 'create workflow'
+    permission_required = 'galaxy.add_workflow'
+    redirect_string = 'galaxy_summary'
+
+    def handle_no_permission(self):
+        messages.error(self.request, 'User has insufficient privileges to {}'.format(self.task_string))
+        return redirect(self.redirect_string)
+
+    def user_passes_test(self, request):
+        if request.user.is_superuser:
+            return True
+        else:
+            return False
+
 
     def form_valid(self, form):
         user = self.request.user
@@ -762,6 +864,3 @@ def ajax_post_selected(request):
 
 def success(request):
     return render(request, 'galaxy/success.html')
-
-
-
