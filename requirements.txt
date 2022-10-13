@@ -5,3 +5,4 @@ django-autocomplete-light
 bioblend
 
 -e git+https://github.com/computational-metabolomics/django-gfiles@master#egg=django-gfiles
+
