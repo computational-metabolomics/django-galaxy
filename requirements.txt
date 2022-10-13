@@ -1,8 +1,6 @@
 django>=2.2.*,<4.*
+django-gfiles
 django-filter>=21.*
 django-rest-framework
 django-autocomplete-light
 bioblend
-
--e git://github.com/computational-metabolomics/django-gfiles@master#egg=django-gfiles
-
