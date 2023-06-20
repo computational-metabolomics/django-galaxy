@@ -1,4 +1,4 @@
-django>=2.2.*,<4.*
+django>=3.2
 django-gfiles
 django-filter>=21.*
 django-rest-framework
